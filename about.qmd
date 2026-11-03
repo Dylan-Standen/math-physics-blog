@@ -1,0 +1,20 @@
+---
+title: "About Me"
+image: "images/profile_cropped.jpeg"
+about:
+  template: jolla
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/dylan-standen-b307a628a/
+    - icon: github
+      text: Github
+      href: https://github.com/Dylan-Standen
+
+---
+
+Hi, I'm Dylan. I'm a theoretical physics graduate from the University of Cambridge. This is my space to write freely about anything that has been lingering in my mind. I will mainly be writing about aspects of theoretical and mathematical physics that I enjoy and believe deserve more attention.
+
+I will try to keep the explanations accessible and build up any required mathematics from undergraduate-level arguments. This does not mean that you need to be a mathematician to enjoy these articles. Geometric and visual arguments will also be employed liberally because of their beauty and physical intuition.
+
+Anyway, I hope you can learn some cool physics and maths from this page! Please note that any views expressed here are my own.

@@ -1,0 +1,1515 @@
+---
+title: "Curvature, Curvature, Curvature!"
+description: "How the same geometric idea appears in general relativity and gauge theory."
+author: "Dylan Standen"
+image: thumbnail/Minimal_surface_curvature_planes-en.png
+date: "2026-08-20"
+categories:
+  - Mathematical Physics
+  - Geometry
+  - Gauge Theory
+---
+
+## Introduction
+
+What is curvature? Well, it's a good question and one that can't be answered naively. Developing the notion of curvature (along with a formal mathematical definition) took years as well as some of the greatest mathematical minds to finally crack. Given this, I think it would be useful to discuss the history and development of this topic first before turning to physics.
+
+### All Roads Lead to Euler
+
+As with most things in mathematics their origins lead to Leonhard Euler. I should mention that while curvature as a concept dates back to the time of the ancient Greeks, it was only later, after the advent of Calculus, that we could formulate an analytical understanding of curvature. 
+
+So, Euler was interested in the curvature of curves and surfaces. This led him to define quantities called *principal curvatures*. The theorem that led to this concept was first proved by Euler in 1760. 
+
+#### The Curvature of Curves
+
+You hopefully have an understanding of curves. The most famous example of one is simply a circle in $\mathbb{R}^2$. We can view this as the set of tuples $(x,y)$ such that 
+
+\begin{equation}
+x^2 + y^2 = 1 \, ,
+\end{equation}
+
+where I have set the radius equal to 1 for ease. This view isn't as useful for our needs, however. Instead, I will introduce a polar coordinate transformation such that 
+
+\begin{align}
+x & = \cos(\theta), & y = \sin(\theta) \, .
+\end{align}
+
+A circle can then be viewed as a closed curve $\gamma: [0, 2\pi] \rightarrow \mathbb{R}^2$ parametrised by a single variable $\theta$. This curve view extends nicely to 3D (the first space where differential geometry was studied). Let's introduce a curve $\psi: I \subset \mathbb{R} \rightarrow \mathbb{R}^3$, which is parametrised by a parameter $\lambda \in I$, i.e. 
+
+\begin{equation}
+   \psi: \lambda \mapsto \psi(\lambda) \in \mathbb{R}^3 \, .
+\end{equation}
+
+If I have such a curve, how do I measure its length? For that we need the arc length formula. 
+
+Let a point on the curve be given by position vector $\mathbf{r}(\lambda) = \psi(\lambda)$, which is centered at the origin. Suppose, I look at a new position on the curve an infinitesimal distance away from $\mathbf{r}(\lambda)$, given by $\mathbf{r}(\lambda + \operatorname{d}\lambda)$. The separation vector is given (to first order using Taylors theorem)
+
+\begin{equation}
+ \mathbf{r}(\lambda + \operatorname{d}\lambda) - \mathbf{r}(\lambda)  = \frac{\operatorname{d}\mathbf{r}}{\operatorname{d}\lambda} \, \operatorname{d}\lambda = \left(\frac{\operatorname{d}x}{\operatorname{d}\lambda}, \frac{\operatorname{d}y}{\operatorname{d}\lambda}, \frac{\operatorname{d}z}{\operatorname{d}\lambda}\right) \, \operatorname{d} \lambda\, .
+\end{equation}
+
+This little (actually infinitesimal) separation vector has some length given by everyone's favourite Theorem; the Pythagorean theorem, 
+
+\begin{equation}
+\operatorname{d}s^2 = \left(\frac{\operatorname{d}x}{\operatorname{d}\lambda} \right)^2 \, (\operatorname{d} \lambda)^2 + \left(\frac{\operatorname{d}y}{\operatorname{d}\lambda} \right)^2 \, (\operatorname{d} \lambda)^2  + \left(\frac{\operatorname{d}z}{\operatorname{d}\lambda} \right)^2 \, (\operatorname{d} \lambda)^2 \, .
+\end{equation} 
+
+The arc length of a certain section of this curve is then simply the sum (actually the integral) of all of these infinitesimal distances 
+
+\begin{equation}
+s = \int \operatorname{d}s = \int \sqrt{\left(\frac{\operatorname{d}x}{\operatorname{d}\lambda} \right)^2  + \left(\frac{\operatorname{d}y}{\operatorname{d}\lambda} \right)^2 + \left(\frac{\operatorname{d}z}{\operatorname{d}\lambda} \right)^2} \, \operatorname{d}\lambda \, .
+\end{equation}
+
+Where the natural measure is the parameter $\lambda$. I'll now make a slight change of notation to make the expression more general. Let $i \in \{1,2,3\}$ (the indexing set) and take $x^1 = x, x^2 = y, x^3 = z$. With this we have 
+
+\begin{equation}
+s = \int \sqrt{\left(\frac{\operatorname{d}x^1}{\operatorname{d}\lambda} \right)^2  + \left(\frac{\operatorname{d}x^2}{\operatorname{d}\lambda} \right)^2 + \left(\frac{\operatorname{d}x^3}{\operatorname{d}\lambda} \right)^2} \, \operatorname{d}\lambda \, .
+\end{equation}
+
+I should mention that the terms inside the square root are the squares of the velocity components in each direction. The above can be written in an even more succinct way by introducing the *metric*. 
+
+
+#### The Metric
+
+The metric allows us to define distances and angles on our surface, think of it as a map 
+
+\begin{equation}
+g : V \times V \rightarrow \mathbb{R}
+\end{equation}
+
+where $V$ is a vector space (if you don't recall the definition that's fine just think of it as a space in which vectors live and obey certain axioms). So, we can see that it takes in two vectors and produces a real number. For the geometry we are considering here, this map is linear in both vectors, symmetric, and positive-definite. The last condition simply means that $g(v,v)>0$ for any non-zero vector $v$, allowing us to interpret $\sqrt{g(v,v)}$ as its length. How can we define such a map using vectors, well the logical choice is the inner product. The metric gives a more general form of it, however. Suppose that we have some basis for $V$ $\{e_i\}_{i = 1}^N$ (where $N = \operatorname{dim}V$) such that any element $v \in V$ is
+
+\begin{equation}
+v = \sum_{i = 1}^N v^i e_i \, .
+\end{equation}
+
+Similarly, let $w \in V$ be another vector with components $w^j$. Since the metric is linear in both of its arguments, we can write
+
+\begin{align}
+g(v,w) & = g\left(\sum_{i = 1}^N v^i e_i, \sum_{j = 1}^N w^j e_j\right) \\
+       & = \sum_{i = 1}^N \sum_{j = 1}^N v^i w^j g(e_i,e_j) \, .
+\end{align}
+
+We now define the components of the metric in this basis as
+
+\begin{equation}
+g_{ij} = g(e_i,e_j) \, ,
+\end{equation}
+
+and hence
+
+\begin{equation}
+g(v,w) = \sum_{i = 1}^N \sum_{j = 1}^N g_{ij}v^i w^j \, .
+\end{equation}
+
+Writing out all of these sums quickly becomes quite tedious. Einstein introduced a convention where any index that appears twice in a term, once upstairs and once downstairs, is automatically summed over. This is called the *Einstein summation convention*. Using it, we can simply write
+
+\begin{align}
+v & = v^i e_i \, , & g(v,w) & = g_{ij}v^i w^j \, .
+\end{align}
+
+The sums have not disappeared; we have just agreed not to write them in order to save our sanity. In the usual Cartesian basis of $\mathbb{R}^3$, the components of the metric are $g_{ij} = \delta_{ij}$, where $\delta_{ij}$ is equal to 1 when $i=j$ and 0 otherwise (the identity matrix). Our infinitesimal distance can therefore be written as
+
+\begin{equation}
+\operatorname{d}s^2 = g_{ij}\operatorname{d}x^i\operatorname{d}x^j \, .
+\end{equation}
+
+For Cartesian coordinates this is just the Pythagorean theorem from before, hidden inside a much nicer piece of notation. Along our curve, each coordinate $x^i$ is a function of $\lambda$, so
+
+\begin{equation}
+\operatorname{d}x^i = \frac{\operatorname{d}x^i}{\operatorname{d}\lambda}\operatorname{d}\lambda \, .
+\end{equation}
+
+Substituting this into the line element gives the arc length in its metric form,
+
+\begin{equation}
+s = \int \sqrt{
+g_{ij}\frac{\operatorname{d}x^i}{\operatorname{d}\lambda}
+      \frac{\operatorname{d}x^j}{\operatorname{d}\lambda}
+} \, \operatorname{d}\lambda \, .
+\end{equation}
+
+In Euclidean space $g_{ij}=\delta_{ij}$ and this reduces to our previous expression. Notice also that it yields exactly the inner product we are used to. The usefulness of the metric is that we are no longer restricted to Cartesian coordinates, or even to flat spaces. In general the components $g_{ij}$ may vary from point to point, in which case they should really be written as $g_{ij}(x(\lambda))$ along the curve. 
+
+
+#### Parameterisation Invariance
+
+The length of the curve is a physically meaningful object that we could measure in the lab. The arc length formula then should *not* depend on the parameter I use to "measure'' the curve. We say it is parameterisation invariant. To see this, suppose I define a new parameter for my path $\tilde{\lambda}=\tilde{\lambda}(\lambda)$. I will assume this map is smooth and monotonic, with $\operatorname{d}\tilde{\lambda}/\operatorname{d}\lambda \neq 0$ (a requirement of the inverse function theorem), so that all I am doing is relabelling the points along the same curve. With this map, the derivatives vary by the chain rule,
+
+\begin{equation}
+\frac{\operatorname{d}x^i}{\operatorname{d}\lambda}
+=
+\frac{\operatorname{d}x^i}{\operatorname{d}\tilde{\lambda}}
+\frac{\operatorname{d}\tilde{\lambda}}{\operatorname{d}\lambda} \, .
+\end{equation}
+
+For simplicity, take the reparameterisation to preserve orientation, meaning $\operatorname{d}\tilde{\lambda}/\operatorname{d}\lambda>0$. Substituting the above into the arc length gives
+
+\begin{align}
+s
+&= \int_{\lambda_a}^{\lambda_b}
+\sqrt{
+g_{ij}
+\frac{\operatorname{d}x^i}{\operatorname{d}\tilde{\lambda}}
+\frac{\operatorname{d}x^j}{\operatorname{d}\tilde{\lambda}}
+\left(\frac{\operatorname{d}\tilde{\lambda}}{\operatorname{d}\lambda}\right)^2
+} \, \operatorname{d}\lambda \\
+&= \int_{\lambda_a}^{\lambda_b}
+\sqrt{
+g_{ij}
+\frac{\operatorname{d}x^i}{\operatorname{d}\tilde{\lambda}}
+\frac{\operatorname{d}x^j}{\operatorname{d}\tilde{\lambda}}
+}
+\frac{\operatorname{d}\tilde{\lambda}}{\operatorname{d}\lambda}
+\, \operatorname{d}\lambda \\
+&= \int_{\tilde{\lambda}_a}^{\tilde{\lambda}_b}
+\sqrt{
+g_{ij}
+\frac{\operatorname{d}x^i}{\operatorname{d}\tilde{\lambda}}
+\frac{\operatorname{d}x^j}{\operatorname{d}\tilde{\lambda}}
+} \, \operatorname{d}\tilde{\lambda} \, .
+\end{align}
+
+This is exactly the same arc length formula that we started with (we could make a trivial change of variables), only written using $\tilde{\lambda}$ instead of $\lambda$. The parameter has changed, along with the coordinate velocity of the curve, but its length has not. If the reparameterisation reverses orientation then an absolute value appears when taking the square root; the conclusion is still the same. Note that we could have also derived this using the Jacobian, which would be 
+
+\begin{equation}
+J = \frac{\operatorname{d}\tilde{\lambda}}{\operatorname{d}\lambda} \, ,
+\end{equation}
+
+such that the integral is 
+
+
+\begin{equation}
+s = \int_{\tilde{\lambda}_a}^{\tilde{\lambda}_b}
+\sqrt{
+g_{ij}
+\frac{\operatorname{d}x^i}{\operatorname{d}\tilde{\lambda}}
+\frac{\operatorname{d}x^j}{\operatorname{d}\tilde{\lambda}}
+} \, \left|\frac{\operatorname{d}\tilde{\lambda}}{\operatorname{d}\lambda}\right| \, \operatorname{d}\lambda \, ,
+\end{equation}
+
+which yields exactly as before.
+
+
+This simple example points towards a much more powerful idea. A reparameterisation is a diffeomorphism of the interval used to label the curve: a smooth and invertible map whose inverse is also smooth. We can generalise this from a one-dimensional interval to an entire smooth manifold. The coordinates we attach to points may change, but geometric quantities do not depend on those labels. This idea sits at the heart of the diffeomorphism invariance of general relativity.
+
+Gauge invariance follows the same general philosophy, although it acts on internal degrees of freedom rather than on the coordinates of spacetime. Different choices of gauge can give different mathematical descriptions of the same physical configuration. This freedom is incredibly powerful: it allows us to choose whichever coordinates, parameters, or gauges make a problem easiest without changing the underlying physics. We will see later that curvature is one of the objects that survives these changes and captures the actual geometry or physical field.
+
+#### Back to Curvature
+
+With that discussion of the arc length over we can start discussing the actual curvature of the curves themselves. We introduce a curve $\gamma: I \rightarrow \mathbb{R}^3$ as before and choose the parameter now to be the arc length itself. This is a viable choice since, for a regular curve, the speed is non-zero and the arc length $s(\lambda)$ is strictly increasing. The inverse function theorem then allows us to invert $s(\lambda)$ and write the curve as $\gamma(s)$.
+
+Before doing this, it is useful to see what our choice of parameter does to the velocity vector. For an arbitrary parameter $\lambda$, the velocity of the curve is
+
+\begin{equation}
+\mathbf{v}(\lambda)
+= \frac{\operatorname{d}\gamma}{\operatorname{d}\lambda} \, .
+\end{equation}
+
+I am using velocity here in a geometric sense. It is only a physical velocity if $\lambda$ is time. The length of this vector is the speed at which the curve is being traced out,
+
+\begin{equation}
+\left\|\mathbf{v}(\lambda)\right\|
+= \frac{\operatorname{d}s}{\operatorname{d}\lambda} \, .
+\end{equation}
+
+The above follows from the fundamental theorem of calculus. When we use arc length as the parameter, the velocity vector becomes
+
+\begin{align}
+\mathbf{T}(s)
+&= \frac{\operatorname{d}\gamma}{\operatorname{d}s} \\
+&= \frac{\operatorname{d}\gamma}{\operatorname{d}\lambda}
+   \frac{\operatorname{d}\lambda}{\operatorname{d}s} \\
+&= \frac{\mathbf{v}(\lambda)}{\left\|\mathbf{v}(\lambda)\right\|} \, .
+\end{align}
+
+Thus, choosing the arc length simply normalises the velocity vector. We call $\mathbf{T}(s)$ the *unit tangent vector*, since
+
+\begin{equation}
+\left\|\mathbf{T}(s)\right\|=1 \, .
+\end{equation}
+
+We are now finally in a position to define curvature. The tangent vector of a straight line never changes, while the tangent vector of a curved line does. It is therefore natural to define the *curvature vector* as the rate of change of the unit tangent vector with respect to arc length,
+
+\begin{equation}
+\mathbf{K}(s)
+= \frac{\operatorname{d}\mathbf{T}}{\operatorname{d}s}
+= \frac{\operatorname{d}^2\gamma}{\operatorname{d}s^2} \, .
+\end{equation}
+
+The curvature vector cannot point along the curve itself. To see this, we differentiate the fact that the tangent vector has unit length,
+
+\begin{align}
+0
+&= \frac{\operatorname{d}}{\operatorname{d}s}
+   \left(\mathbf{T}\cdot\mathbf{T}\right) \\
+&= 2\mathbf{T}\cdot\frac{\operatorname{d}\mathbf{T}}{\operatorname{d}s}
+ = 2\mathbf{T}\cdot\mathbf{K} \, .
+\end{align}
+
+Therefore $\mathbf{K}$ is perpendicular to $\mathbf{T}$ and points in the direction in which the curve is turning. Finally, we define the *curvature* $\kappa$ to be the length of the curvature vector,
+
+\begin{equation}
+\kappa(s)
+= \left\|\mathbf{K}(s)\right\|
+= \left\|\frac{\operatorname{d}\mathbf{T}}{\operatorname{d}s}\right\| \, .
+\end{equation}
+
+A straight line has $\kappa=0$, while a curve whose tangent changes rapidly has a larger curvature. Whenever $\kappa\neq0$, we can define the unit normal vector $\mathbf{N}=\mathbf{K}/\kappa$, giving
+
+\begin{equation}
+\mathbf{K}=\kappa\mathbf{N} \, .
+\end{equation}
+
+This definition is enough for curves in $\mathbb{R}^3$. When the ambient space itself is curved, the ordinary derivative will need to be replaced by a covariant derivative. We will come back to this later.
+
+The above definition should hopefully make intuitive sense. In the 1D case, our curve is simply a line in the real plane (like the functions you know and love). The velocity of this curve is then simply the rate of change of the function and the curvature is then the rate of change of this rate of change.
+
+
+
+#### Euler's Theorem on Normal Curvature
+
+Let $M$ be a smooth, regular surface embedded in $\mathbb{R}^3$, and let $p \in M$. We choose a local unit normal vector field $\mathbf{n}$ near $p$. There is not just one normal plane at $p$: every unit tangent vector $X \in T_pM$ determines one. It is the plane
+
+\begin{equation}
+P_{X,p}
+= p + \operatorname{span}\{X,\mathbf{n}(p)\} \, ,
+\end{equation}
+
+which passes through $p$ and contains both $X$ and the normal to the surface. Near $p$, the intersection of $P_{X,p}$ with $M$ is a plane curve $\gamma_X$ whose tangent at $p$ is $X$. We call this curve a *normal section* of the surface.
+
+Suppose that $\gamma_X$ is parametrised by arc length, with $\gamma_X(0)=p$ and $\gamma_X'(0)=X$. Its curvature vector at $p$ lies along the surface normal, so we define the signed *normal curvature* in the direction $X$ by
+
+\begin{equation}
+\kappa_n(X)
+= \left\langle \gamma_X''(0),\mathbf{n}(p)\right\rangle \, .
+\end{equation}
+
+The sign depends on our choice of $\mathbf{n}$, but the magnitude does not. As we vary $X$ over all unit tangent vectors at $p$, the normal curvature has a maximum and a minimum. These two extremal values, $\kappa_1$ and $\kappa_2$, are the *principal curvatures*, and the directions in which they occur are the *principal directions*. When $\kappa_1\neq\kappa_2$, the two principal directions are perpendicular.
+
+Euler's theorem tells us the normal curvature in every other direction. Let $e_1$ and $e_2$ be unit principal directions associated with $\kappa_1$ and $\kappa_2$. Any unit tangent vector can then be written as
+
+\begin{equation}
+X = \cos(\theta)e_1 + \sin(\theta)e_2 \, ,
+\end{equation}
+
+where $\theta$ is the angle between $X$ and $e_1$. Euler's theorem states that
+
+\begin{equation}
+
+\kappa_n(X)
+= \kappa_1\cos^2(\theta)
++ \kappa_2\sin^2(\theta)
+\, .
+\end{equation}
+
+We can derive this equation without introducing any new machinery. First, recall that the curvature vector of a unit-speed curve is perpendicular to its tangent vector $\mathbf{T}$. Since the curve lies on the surface, $\mathbf{T}$ is also perpendicular to the surface normal $\mathbf{n}$. We can therefore define the vector
+
+\begin{equation}
+\mathbf{e}_g = \mathbf{n} \times \mathbf{T} \, .
+\end{equation}
+
+The three vectors $\{\mathbf{T},\mathbf{e}_g,\mathbf{n}\}$ form an orthonormal basis of $\mathbb{R}^3$. Because the curvature vector has no component along $\mathbf{T}$, it can be expanded as
+
+\begin{equation}
+\gamma''(s)
+= \kappa_g\mathbf{e}_g+\kappa_n\mathbf{n} \, ,
+\end{equation}
+
+where $\kappa_g$ is called the *geodesic curvature* and $\kappa_n$ is the normal curvature. We will return to the meaning of geodesic curvature later. For now, taking the inner product with $\mathbf{n}$ gives
+
+\begin{equation}
+\kappa_n
+= \left\langle\gamma''(s),\mathbf{n}\right\rangle \, .
+\end{equation}
+
+To determine how this quantity depends on the direction of the curve, choose a local parametrisation $\mathbf{r}(u,v)$ of the surface around $p$. We choose the coordinates so that, at $p$,
+
+\begin{align}
+\mathbf{r}_u &= e_1 \, , &
+\mathbf{r}_v &= e_2 \, ,
+\end{align}
+
+where $e_1$ and $e_2$ are the unit principal directions. A curve on the surface can then be written as
+
+\begin{equation}
+\gamma(s)=\mathbf{r}(u(s),v(s)) \, .
+\end{equation}
+
+Its tangent vector at $p$ is
+
+\begin{equation}
+\gamma'(s)
+= \mathbf{r}_u u' + \mathbf{r}_v v' \, .
+\end{equation}
+
+We want this tangent vector to equal $X=\cos(\theta)e_1+\sin(\theta)e_2$. Consequently, at $p$,
+
+\begin{align}
+u' &= \cos(\theta) \, , &
+v' &= \sin(\theta) \, .
+\end{align}
+
+Differentiating the curve once more gives
+
+\begin{equation}
+\gamma''
+= \mathbf{r}_u u''
++ \mathbf{r}_v v''
++ \mathbf{r}_{uu}(u')^2
++ 2\mathbf{r}_{uv}u'v'
++ \mathbf{r}_{vv}(v')^2 \, .
+\end{equation}
+
+The vectors $\mathbf{r}_u$ and $\mathbf{r}_v$ are tangent to the surface, so their inner products with $\mathbf{n}$ vanish. Taking the normal component of the above equation therefore gives
+
+\begin{equation}
+\kappa_n
+= b_{11}(u')^2
++ 2b_{12}u'v'
++ b_{22}(v')^2 \, ,
+\end{equation}
+
+where we have introduced the notation
+
+\begin{equation}
+b_{ij}
+= \left\langle\mathbf{r}_{ij},\mathbf{n}\right\rangle \, .
+\end{equation}
+
+Because we chose $e_1$ and $e_2$ to be the principal directions, the normal curvature has no mixed term in this basis. We therefore have
+
+\begin{align}
+b_{11} &= \kappa_1 \, , &
+b_{12} &= 0 \, , &
+b_{22} &= \kappa_2 \, .
+\end{align}
+
+Finally, substituting $u'=\cos(\theta)$ and $v'=\sin(\theta)$ gives
+
+\begin{equation}
+
+\kappa_n(X)
+= \kappa_1\cos^2(\theta)
++ \kappa_2\sin^2(\theta)
+\, ,
+\end{equation}
+
+which is Euler's formula. This is nice. Okay, the above can also be formulated in the more modern treatment, thanks to Gauss.
+
+### Principal Curvature and the Second Fundamental Form
+
+Gauss had a large impact on the classical study of differential geometry. He and Riemann are to thank for many of our modern concepts and notations. It's only right then that I introduce the same ideas as above, but now in terms of objects called *fundamental forms*.
+
+#### The First Fundamental Form
+
+Let us look at a parametric surface within $\mathbb{R}^3$. We will first consider a surface that can be written as the graph of some function $f$. Let's choose two coordinates $u$ and $v$ such that the surface is described by a map $S: \mathbb{R}^2 \rightarrow \mathbb{R}^3$ given by
+
+\begin{equation}
+S: (u,v) \mapsto (u,v, f(u,v)) \, .
+\end{equation}
+
+Here $f$ is playing the role of the $z$-coordinate. Not every surface can be written globally in this way, but locally this is possible around any point where the surface does not fold vertically over the $(u,v)$-plane. This is more than enough for what we want to do.
+
+We now ask what happens when we move a small distance in either of our coordinates. Differentiating $S$ gives the two vectors
+
+\begin{align}
+S_u
+&= \frac{\partial S}{\partial u}
+= \left(1,0,\frac{\partial f}{\partial u}\right) \, , &
+S_v
+&= \frac{\partial S}{\partial v}
+= \left(0,1,\frac{\partial f}{\partial v}\right) \, .
+\end{align}
+
+These vectors point along the two coordinate curves on the surface. It should be clear that they are linearly independent and therefore form a basis of the tangent plane. An infinitesimal displacement along the surface is then
+
+\begin{equation}
+\operatorname{d}S
+= S_u\operatorname{d}u
++S_v\operatorname{d}v \, .
+\end{equation}
+
+Just as we did earlier for a curve, we can find the length of this displacement by taking its inner product with itself,
+
+\begin{align}
+\operatorname{d}s^2
+&= \operatorname{d}S\cdot\operatorname{d}S \\
+&= \left(S_u\cdot S_u\right)\operatorname{d}u^2
++2\left(S_u\cdot S_v\right)\operatorname{d}u\operatorname{d}v
++\left(S_v\cdot S_v\right)\operatorname{d}v^2 \, .
+\end{align}
+
+It is conventional to give these three inner products their own names,
+
+\begin{align}
+E &= S_u\cdot S_u \, , &
+F &= S_u\cdot S_v \, , &
+G &= S_v\cdot S_v \, .
+\end{align}
+
+For our graph surface they are
+
+\begin{align}
+E &= 1+f_u^2 \, , &
+F &= f_uf_v \, , &
+G &= 1+f_v^2 \, ,
+\end{align}
+
+where I have used $f_u=\partial f/\partial u$ and similarly for $f_v$. We can now write the squared distance as
+
+\begin{equation}
+\operatorname{d}s^2
+= E\operatorname{d}u^2
++2F\operatorname{d}u\operatorname{d}v
++G\operatorname{d}v^2 \, .
+\end{equation}
+
+This expression is called the *first fundamental form*, and it is usually denoted by $\mathrm{I}$. Now, the name sounds rather grand, but it is simply the metric induced on the surface by the ordinary Euclidean inner product in $\mathbb{R}^3$. In matrix notation we have
+
+\begin{equation}
+\left(g_{ij}\right)
+=
+\begin{pmatrix}
+E & F \\
+F & G
+\end{pmatrix} \, ,
+\end{equation}
+
+so this is exactly the same metric $g_{ij}$ that we introduced earlier, only now written in the coordinates of the surface. Technically speaking this would be the pull-back of the Euclidean metric onto the surface, but I won't be careful about this here.
+
+To see what information it contains, let $X$ and $Y$ be two vectors in the tangent plane,
+
+\begin{align}
+X &= X^uS_u+X^vS_v \, , &
+Y &= Y^uS_u+Y^vS_v \, .
+\end{align}
+
+The first fundamental form acts on these vectors as
+
+\begin{align}
+\mathrm{I}(X,Y)
+&= X\cdot Y \\
+&= EX^uY^u
++F\left(X^uY^v+X^vY^u\right)
++GX^vY^v \, .
+\end{align}
+
+Taking $X=Y$ gives the length of a tangent vector, while taking two different vectors allows us to calculate the angle between them. The first fundamental form also gives us the length of any curve on the surface. If
+
+\begin{equation}
+\gamma(\lambda)
+= S\bigl(u(\lambda),v(\lambda)\bigr) \, ,
+\end{equation}
+
+then its tangent vector is
+
+\begin{equation}
+\frac{\operatorname{d}\gamma}{\operatorname{d}\lambda}
+= S_u\frac{\operatorname{d}u}{\operatorname{d}\lambda}
++S_v\frac{\operatorname{d}v}{\operatorname{d}\lambda} \, .
+\end{equation}
+
+Its length is therefore
+
+\begin{equation}
+s
+= \int
+\sqrt{
+E\left(\frac{\operatorname{d}u}{\operatorname{d}\lambda}\right)^2
++2F\frac{\operatorname{d}u}{\operatorname{d}\lambda}
+      \frac{\operatorname{d}v}{\operatorname{d}\lambda}
++G\left(\frac{\operatorname{d}v}{\operatorname{d}\lambda}\right)^2
+}
+\operatorname{d}\lambda \, .
+\end{equation}
+
+We can even find areas. The vectors $S_u\operatorname{d}u$ and $S_v\operatorname{d}v$ span an infinitesimal parallelogram on the surface, so
+
+\begin{align}
+\operatorname{d}A
+&= \left\|S_u\times S_v\right\|\operatorname{d}u\operatorname{d}v \\
+&= \sqrt{EG-F^2}\operatorname{d}u\operatorname{d}v \, .
+\end{align}
+
+Although $E$, $F$, and $G$ will change if we choose different coordinates, the lengths, angles, and areas calculated from them will not. This is why the first fundamental form describes the *intrinsic geometry* of the surface. It tells us what someone confined to the surface could measure without ever needing to look at the surrounding space.
+
+This also fills in a small detail from our earlier derivation of Euler's formula. There we chose coordinates aligned with the orthonormal principal directions $e_1$ and $e_2$. At the point $p$, this choice means
+
+\begin{align}
+E &= 1 \, , &
+F &= 0 \, , &
+G &= 1 \, .
+\end{align}
+
+Consequently, the unit vector $X=\cos(\theta)e_1+\sin(\theta)e_2$ has coordinate components $u'=\cos(\theta)$ and $v'=\sin(\theta)$, exactly as we used above. The first fundamental form controls these intrinsic measurements, but it does not yet tell us how the surface bends inside $\mathbb{R}^3$. For that we need the *second fundamental form*.
+
+
+#### The Second Fundamental Form
+
+I'll now discuss the second fundamental form and its relation to the principal curvatures. Suppose that, similar to the above, the surface in question is given by an at least twice differentiable function $f(u,v)$. We translate and rotate our coordinates so that the point we care about is the origin and its tangent plane is the $(u,v)$-plane. In other words,
+
+\begin{align}
+f(0,0) &= 0 \, , &
+f_u(0,0) &= 0 \, , &
+f_v(0,0) &= 0 \, .
+\end{align}
+
+The first derivatives vanish at the origin because the tangent plane is horizontal there. Expanding $f$ around this point using Taylor's theorem gives
+
+\begin{equation}
+f(u,v)
+= \frac{1}{2}
+\left(
+f_{uu}u^2
++2f_{uv}uv
++f_{vv}v^2
+\right)
++o\left(u^2+v^2\right) \, ,
+\end{equation}
+
+where all the derivatives on the right-hand side are evaluated at $(0,0)$. Notice that the constant and linear terms have disappeared because of our choice of coordinates. The first non-trivial information about how the surface leaves its tangent plane is therefore contained in its second derivatives.
+
+Let us now look along a unit direction in the tangent plane,
+
+\begin{equation}
+X
+= \cos(\theta)e_1
++\sin(\theta)e_2 \, ,
+\end{equation}
+
+where, for the moment, $e_1$ and $e_2$ simply point along the $u$- and $v$-axes. The normal plane determined by $X$ intersects the graph in the curve
+
+\begin{equation}
+\gamma_\theta(t)
+= \left(
+t\cos(\theta),
+t\sin(\theta),
+f\bigl(t\cos(\theta),t\sin(\theta)\bigr)
+\right) \, .
+\end{equation}
+
+At $t=0$ this curve has unit tangent $X$, while its second derivative points along the surface normal $\mathbf{n}=(0,0,1)$. Its signed curvature is consequently
+
+\begin{align}
+\kappa_n(\theta)
+&= \left\langle\gamma_\theta''(0),\mathbf{n}\right\rangle \\
+&= f_{uu}\cos^2(\theta)
++2f_{uv}\cos(\theta)\sin(\theta)
++f_{vv}\sin^2(\theta) \, .
+\end{align}
+
+This expression is a quadratic form on the tangent plane. It is the simplest version of the *second fundamental form*. For our graph, at the point where the tangent plane is horizontal, we can write
+
+\begin{equation}
+\mathrm{II}
+= f_{uu}\operatorname{d}u^2
++2f_{uv}\operatorname{d}u\operatorname{d}v
++f_{vv}\operatorname{d}v^2 \, .
+\end{equation}
+
+Admittedly, this looks suspiciously similar to the first fundamental form, but the two forms contain different information. The first uses inner products of the first derivatives of $S$ and measures lengths within the surface. The second uses the normal components of the second derivatives of $S$ and measures how the surface bends away from its tangent plane.
+
+To make this definition work for a general parametrised surface $S(u,v)$, first define its unit normal vector by
+
+\begin{equation}
+\mathbf{n}
+= \frac{S_u\times S_v}{\left\|S_u\times S_v\right\|} \, .
+\end{equation}
+
+We then introduce the coefficients
+
+\begin{align}
+L &= \left\langle S_{uu},\mathbf{n}\right\rangle \, , &
+M &= \left\langle S_{uv},\mathbf{n}\right\rangle \, , &
+N &= \left\langle S_{vv},\mathbf{n}\right\rangle \, .
+\end{align}
+
+The second fundamental form is
+
+\begin{equation}
+\mathrm{II}
+= L\operatorname{d}u^2
++2M\operatorname{d}u\operatorname{d}v
++N\operatorname{d}v^2 \, ,
+\end{equation}
+
+or, in matrix notation,
+
+\begin{equation}
+b_{ij}
+=
+\begin{pmatrix}
+L & M \\
+M & N
+\end{pmatrix} \, .
+\end{equation}
+
+Suppose that a tangent vector is written as
+
+\begin{equation}
+X = X^uS_u+X^vS_v \, .
+\end{equation}
+
+The two fundamental forms evaluated on this vector are
+
+\begin{align}
+\mathrm{I}(X,X)
+&= E(X^u)^2+2FX^uX^v+G(X^v)^2 \, , \\
+\mathrm{II}(X,X)
+&= L(X^u)^2+2MX^uX^v+N(X^v)^2 \, .
+\end{align}
+
+The first expression gives the squared length of $X$, while the second gives the normal component of the curvature in that direction. The normal curvature is 
+
+\begin{equation}
+\kappa_n(X)
+= \frac{\mathrm{II}(X,X)}{\mathrm{I}(X,X)} \, .
+\end{equation}
+
+Hopefully it is obvious that for a unit vector the denominator is simply one. This formula is useful because it separates the two pieces of geometry: $\mathrm{I}$ tells us what counts as a unit direction, while $\mathrm{II}$ tells us how much the surface bends in that direction.
+
+The principal curvatures are the maximum and minimum values of this ratio. Equivalently, they are the two values of $\kappa$ that solve
+
+\begin{equation}
+\det\left(
+\begin{pmatrix}
+L & M \\
+M & N
+\end{pmatrix}
+-\kappa
+\begin{pmatrix}
+E & F \\
+F & G
+\end{pmatrix}
+\right)=0 \, .
+\end{equation}
+
+If we choose an orthonormal basis consisting of the principal directions (which are themselves the eigenvectors of this eigenvalue problem), the two forms take the particularly simple form
+
+\begin{align}
+\mathrm{I}
+&= \operatorname{d}u^2+\operatorname{d}v^2 \, , \\
+\mathrm{II}
+&= \kappa_1\operatorname{d}u^2
++\kappa_2\operatorname{d}v^2 \, .
+\end{align}
+
+The mixed term has vanished, and a unit direction has components $(\cos(\theta),\sin(\theta))$. Evaluating $\mathrm{II}$ on this direction immediately gives
+
+\begin{equation}
+\kappa_n(\theta)
+= \kappa_1\cos^2(\theta)
++\kappa_2\sin^2(\theta) \, ,
+\end{equation}
+
+which is Euler's formula once again. We can now see where the formula really comes from: in the principal basis, the second fundamental form is diagonal and its diagonal entries are precisely the principal curvatures (i.e. the eigenvalues $\kappa_i$).
+
+### Gaussian Curvature
+
+As the name of this section suggests this measure of curvature was introduced by Gauss. More specifically, it was introduced by him in his *Theorema egregium*; apparently meaning "Remarkable Theorem". Sadly I don't speak Latin, so a google translate had to suffice. 
+
+The Gaussian curvature as define by gauss is 
+
+\begin{equation}
+K = \kappa_1 \kappa_2 \, ,
+\end{equation}
+
+$\kappa_i$'s are the principal curvatures from earlier. We could also write it another way, given the principal basis for the surface we would write it as 
+
+\begin{equation}
+K = \det(S) \, ,
+\end{equation}
+
+where $S$ I have defined as 
+
+\begin{equation}
+S = \begin{pmatrix}
+\kappa_1 & 0 \\
+0 & \kappa_2
+\end{pmatrix} \, .
+\end{equation}
+
+As it turns out $S$ is a more general object called the shape operator, it tells us how normal vectors change from point to point on our surface. I will now introduce this for completeness (it is also just a cool object in its own right). 
+
+#### The Shape Operator
+
+In order to understand how our surface's normals change as we follow the sruface it is best to introduce a curve (once again) $\gamma: I \rightarrow M$, where $M$ is our surface. Let use choose some point $p$ on our surface such that 
+
+\begin{equation}
+\gamma(0) = p
+\end{equation}
+
+and let us denote the the tangent vector to $\gamma$ at $p$ by $X$, i.e. 
+
+\begin{equation}
+\gamma'(0) = X \, .
+\end{equation}
+
+At each point on our curve, the surface will have some normal vector $\mathbf{n}(\gamma(t))$. We can then compare this normal at any point along the curve with the normal at the origin of our curve by smoothly moving the normal back to the origin and then taking the change in the vectors to be 
+
+\begin{equation}
+ \mathcal{S}_p(X) = -\lim_{t \to 0}\frac{\overline{P}_{t \to 0}\mathbf{n}(\gamma(t)) - \mathbf{n}(p)}{t} \, .
+\end{equation}
+
+Where $\overline{P}$ is what is called the ambient *Parallel Transport Operator*. You can likely notice the similarity between this and the derivative operator acting on a function. This is actually no coindience, but to speak about this explicitly I'll have to introduce parallel transport. 
+
+Okay, so parallel transport sounds interesting. It is. I'll firstly have to define the *covariant derivative* and how it acts on vector fields also. This is all starting to feel like a rabbit hole isn't it. This is, however, necessary to *really* understand curvature from its foundations to how we use it in modern physics. By the end you'll hopefully come around to this level depth. If not, then too bad.
+
+I'll first introduce the directional derivative, since the covariant derivative can be seen as a generalisation of this. Given a surface (lets say in $\mathbb{R}^3$ once again) described as the graph of some function $h:U\subset\mathbb{R}^2\rightarrow\mathbb{R}$, the directional derivative tells us how much the height function changes in a certain direction. I'll now define a curve in the parameter domain $\gamma:I\rightarrow U$ such that
+
+\begin{align}
+\gamma(0) & = p\,, & \gamma'(0) = \mathbf{v} \, .
+\end{align}
+
+Hopefully, you recall the gradient of a function, which just tells me how much the function varies in each coordinate direction, i.e. 
+
+\begin{equation}
+\nabla h = \left(\frac{\partial h}{\partial u}, \, \frac{\partial h}{\partial v} \right) \, .
+\end{equation}
+
+Okay, so the directional derivative is simply then how much this gradient points along some direction vector $\mathbf{v}$, such that 
+
+\begin{equation}
+\nabla_\mathbf{v}h = \nabla h \cdot \mathbf{v} \, .
+\end{equation}
+
+Clearly if they are perpendicualr then this equals 0. The lenght of the gradient vector is simply how much it points along itself, so that
+
+\begin{equation}
+\nabla_{\nabla h}h = \nabla h \cdot \nabla h = \left\|\nabla h\right\|^2 \, .
+\end{equation}
+
+Anyway, we can also define the directional derivative via 
+
+\begin{align}
+\nabla_\mathbf{v}h & = \lim_{t \to 0} \frac{h(u + t v_1, v + tv_2) - h(u,v)}{t}\\
+& = \lim_{t \to 0} \frac{h(u,v) + t v_1 \partial_u h + t v_2 \partial_v h -h(u,v) + \mathcal{O}(t^2) }{t} \\
+& =  v_1 \partial_u h +  v_2 \partial_v h \\
+& = \nabla h \cdot \mathbf{v} \, ,
+\end{align}
+
+where I used $\mathbf{v} = (v_1, v_2)$. 
+
+The above shows how the directional derivative acts on scalar valued functions. But what if we want to generalise to vector valued functions (also called vector fields), well this is where the covariant derivative comes in to play. In comparing vectors at different points on the manifold we could naively decide to just take the difference of the two vectors we want to compare, this however doesn't work. This is because vectors at different points on our surface lie in different spaces, called tangent spaces. Think of this space as the space of all tangent vectors to our surface at a specific point. There is no canonical way for these two spaces to interact, so we need a way of brining one vector back so that they lie in the same tangent space without changing the vector at all. 
+
+To see this type of construction in practice I'll use the same surface as I used in the directional derivative section, parametrised by $\mathbf{r}(u,v)=(u,v,h(u,v))$. Let $x^1=u$ and $x^2=v$. The vectors
+
+\begin{equation}
+\mathbf{e}_i
+= \frac{\partial\mathbf{r}}{\partial x^i}
+\end{equation}
+
+form a basis of the tangent space (since they are linearly independent). Any vector in the tangent space at a point can therefore be written as
+
+\begin{equation}
+\mathbf{v}=v^i\mathbf{e}_i \, .
+\end{equation}
+
+How does this tangent vector change with the coordinates then? Differentiaing it yields 
+
+\begin{align}
+\frac{\partial \mathbf{v}}{\partial x^i}
+&= \partial_i(v^j)\mathbf{e}_j
++v^j\partial_i\mathbf{e}_j \, ,
+\end{align}
+
+using the product rule. So, we can see that not only do the components change as we move across the surface but that the basis also varies from point to point. From before, we saw that the derivative of a basis vector need not lie in the tangent space. More genrally it can be written as a linear combination of tangent vectors and a normal vector. This follows from the fact that the basis vectors are actually valued in $\mathbb{R}^3$, since our surface is embedded in it and that $\mathbf{e}_1, \mathbf{e}_2, \mathbf{n}$ form a basis of $\mathbb{R}^3$. I can write
+
+\begin{equation}
+\partial_i\mathbf{e}_j
+= \Gamma^k{}_{ij}\mathbf{e}_k
++b_{ij}\mathbf{n} \, ,
+\end{equation}
+
+where $\Gamma^{k}_{ij}$ are called the *Christoffel Symbols*. They encode the contributions of the tangent directions to this variation of the tangent basis. The coefficients of the normal contribution are
+
+\begin{equation}
+b_{ij}
+= \left\langle\partial_i\mathbf{e}_j,\mathbf{n}\right\rangle \, .
+\end{equation}
+
+If we think about a flat plane with a fixed Cartesian basis, the derivative of the basis vanishes, and thus both the Christoffel symbols and the normal components vanish since the tangent and normal vectors are linearly independent. For fun I'll derive and explicit coordinate form for the Christoffel symbols. 
+
+I'll demand that the space has a metric $g_{ij} = g(\mathbf{e}_i, \mathbf{e}_j)$, which will define the inner product in this space. Next, I'll take the inner product of $\partial_i\mathbf{e}_j$ with $\mathbf{e}_{k}$, yielding
+
+\begin{align}
+g\left(\partial_i\mathbf{e}_j,\mathbf{e}_k\right)
+&=g\left(\Gamma^\ell{}_{ij}\mathbf{e}_\ell+b_{ij}\mathbf{n},\mathbf{e}_k\right) \\
+&=\Gamma^\ell{}_{ij}g\left(\mathbf{e}_\ell,\mathbf{e}_k\right)
++b_{ij}g\left(\mathbf{n},\mathbf{e}_k\right) \\
+&=\Gamma^\ell{}_{ij}g_{\ell k} \, ,
+\end{align}
+
+where the normal term vanishes since $\mathbf{n}$ is orthogonal to every tangent basis vector. It is useful to define the Christoffel symbols with their upper index lowered as
+
+\begin{equation}
+\Gamma_{kij}
+=g_{k\ell}\Gamma^\ell{}_{ij}
+=g\left(\partial_i\mathbf{e}_j,\mathbf{e}_k\right) \, .
+\end{equation}
+
+Now, differentiating the metric itself gives
+
+\begin{align}
+\partial_i g_{jk}
+&=\partial_i g\left(\mathbf{e}_j,\mathbf{e}_k\right) \\
+&=g\left(\partial_i\mathbf{e}_j,\mathbf{e}_k\right)
++g\left(\mathbf{e}_j,\partial_i\mathbf{e}_k\right) \\
+&=\Gamma_{kij}+\Gamma_{jik} \, .
+\end{align}
+
+We can then write down two more copies of this equation by permuting the indices,
+
+\begin{align}
+\partial_i g_{jk}
+&=\Gamma_{kij}+\Gamma_{jik} \, , \\
+\partial_j g_{ik}
+&=\Gamma_{kji}+\Gamma_{ijk} \, , \\
+\partial_k g_{ij}
+&=\Gamma_{jki}+\Gamma_{ikj} \, .
+\end{align}
+
+Since the coordinate derivatives commute, we have
+
+\begin{equation}
+\partial_i\mathbf{e}_j
+=\partial_i\partial_j\mathbf{r}
+=\partial_j\partial_i\mathbf{r}
+=\partial_j\mathbf{e}_i \, ,
+\end{equation}
+
+and hence $\Gamma^\ell{}_{ij}=\Gamma^\ell{}_{ji}$. Adding the first two metric equations and subtracting the third then gives
+
+\begin{equation}
+\partial_i g_{jk}
++\partial_j g_{ik}
+-\partial_k g_{ij}
+=2\Gamma_{kij} \, .
+\end{equation}
+
+Therefore the Christoffel symbols with all lower indices are
+
+\begin{equation}
+\Gamma_{kij}
+=\frac{1}{2}
+\left(
+\partial_i g_{jk}
++\partial_j g_{ik}
+-\partial_k g_{ij}
+\right) \, .
+\end{equation}
+
+Finally, we raise the first index using the inverse metric $g^{mk}$,
+
+\begin{equation}
+\Gamma^m{}_{ij}
+=\frac{1}{2}g^{mk}
+\left(
+\partial_i g_{jk}
++\partial_j g_{ik}
+-\partial_k g_{ij}
+\right) \, .
+\end{equation}
+
+This is the famous form of the Christoffel symbols as seen anywhere and everywhere. With this aside over with we define the Covariant derivative of a vector field as the orthogonal projection of the regular derivative onto the tangent space of our surface. The normal part of the derivative is
+
+\begin{align}
+\left\langle \partial_i\mathbf{v},\mathbf{n}\right\rangle\mathbf{n}
+&= \left\langle \partial_i(v^j)\mathbf{e}_j+v^j\partial_i\mathbf{e}_j,\mathbf{n}\right\rangle\mathbf{n} \\
+&=v^j b_{ij}\mathbf{n} \, .
+\end{align}
+
+Subtracting this normal part therefore gives
+
+\begin{equation}
+\nabla_{\mathbf{e}_i} \mathbf{v}
+= \partial_i \mathbf{v} - v^j b_{ij}\mathbf{n}
+= \left(\partial_i v^k + \Gamma^k_{ij}v^j\right)\mathbf{e}_k \, .
+\end{equation}
+
+We have now finally defined the covariant derivative and I can now go back to where this section began and define parallel transport. 
+
+##### Parallel Transport
+
+Consider a smooth curve $\gamma(t)$ on our surface and a vector field $\mathbf{V}(t)$ along it, so that at each point $\gamma(t)$ the vector $\mathbf{V}(t)$ lies in the tangent space (which is commonly denoted $T_{\gamma(t)}S$, a notation I use in order to save my sanity and forgo me writing "tangent space" everytime). The covariant derivative of $\mathbf{V}$ along the curve is denoted by
+
+\begin{equation}
+\nabla_{\dot{\gamma}(t)}\mathbf{V} \, .
+\end{equation}
+
+If the curve is written in coordinates as $\gamma(t)=\mathbf{r}(x^1(t),x^2(t))$ and $\mathbf{V}(t)=V^j(t)\mathbf{e}_j$, this becomes
+
+\begin{equation}
+\nabla_{\dot{\gamma}(t)}\mathbf{V}
+=\left(
+\frac{dV^k}{dt}
++\Gamma^k{}_{ij}\frac{dx^i}{dt}V^j
+\right)\mathbf{e}_k \, ,
+\end{equation}
+
+where the dot means I am differentiating w.r.t to $t$. We say that $\mathbf{V}$ is parallel transported along $\gamma$ when
+
+\begin{equation}
+\nabla_{\dot{\gamma}(t)}\mathbf{V}
+=0 \, .
+\end{equation}
+
+Intuitively, parallel transport moves the vector along the curve while allowing it to change as little as possible. The tangent planes at two different points of a curved surface are different vector spaces, so it does not really make sense to demand that the vector remains literally unchanged. Instead, we demand that it has no change which can be detected within the tangent plane. From the point of view of the surrounding $\mathbb{R}^3$, the ordinary derivative $d\mathbf{V}/dt$ need not vanish, but for a parallel transported vector its tangential projection vanishes and hence any remaining change is purely normal to the surface. In this sense the vector changes only as much as the curvature of the surface forces it to.
+
+This transport preserves lengths and angles, but this requires a further property of the covariant derivative called metric compatibility. If $g(\mathbf{V},\mathbf{W})=\langle\mathbf{V},\mathbf{W}\rangle$ is our metric, metric compatibility means that its covariant derivative vanishes,
+
+\begin{equation}
+\nabla g=0 \, .
+\end{equation}
+
+More explicitly, for any vector fields $\mathbf{X},\mathbf{V}$ and $\mathbf{W}$ this is the condition
+
+\begin{equation}
+(\nabla_{\mathbf{X}}g)(\mathbf{V},\mathbf{W})
+=\mathbf{X}\!\left[g(\mathbf{V},\mathbf{W})\right]
+-g(\nabla_{\mathbf{X}}\mathbf{V},\mathbf{W})
+-g(\mathbf{V},\nabla_{\mathbf{X}}\mathbf{W})
+=0 \, .
+\end{equation}
+
+This is not simply something we assume. It follows here because we defined the covariant derivative by orthogonally projecting the ordinary derivative onto the tangent plane. Any part removed by the projection is normal to the surface and therefore has zero inner product with the tangent vectors $\mathbf{V}$ and $\mathbf{W}$. Along our curve, metric compatibility therefore gives
+
+\begin{equation}
+\nabla_{\dot{\gamma}}\left\langle\mathbf{V},\mathbf{W}\right\rangle
+=\frac{d}{dt}\left\langle\mathbf{V},\mathbf{W}\right\rangle
+=\left\langle\nabla_{\dot{\gamma}}\mathbf{V},\mathbf{W}\right\rangle
++\left\langle\mathbf{V},\nabla_{\dot{\gamma}}\mathbf{W}\right\rangle \, .
+\end{equation}
+
+Here the covariant derivative of a scalar function is just its ordinary derivative along the curve. If $\mathbf{V}$ and $\mathbf{W}$ are both parallel transported, their covariant derivatives vanish and hence
+
+\begin{equation}
+\nabla_{\dot{\gamma}}\left\langle\mathbf{V},\mathbf{W}\right\rangle=0 \, .
+\end{equation}
+
+Taking $\mathbf{W}=\mathbf{V}$ now shows explicitly that the covariant derivative of the squared length vanishes,
+
+\begin{equation}
+\nabla_{\dot{\gamma}}\|\mathbf{V}\|^2
+=2\left\langle\nabla_{\dot{\gamma}}\mathbf{V},\mathbf{V}\right\rangle
+=0 \, ,
+\end{equation}
+
+and consequently, for a non-zero vector,
+
+\begin{equation}
+\nabla_{\dot{\gamma}}\|\mathbf{V}\|
+=\frac{1}{2\|\mathbf{V}\|}\nabla_{\dot{\gamma}}\|\mathbf{V}\|^2
+=0 \, .
+\end{equation}
+
+Finally, if $\theta$ is the angle between two non-zero parallel transported vectors, then
+
+\begin{equation}
+\cos\theta
+=\frac{\left\langle\mathbf{V},\mathbf{W}\right\rangle}
+{\|\mathbf{V}\|\|\mathbf{W}\|} \, .
+\end{equation}
+
+The covariant derivatives of the numerator and both lengths vanish, so
+
+\begin{equation}
+\nabla_{\dot{\gamma}}(\cos\theta)=0 \, .
+\end{equation}
+
+From the chain rule we have 
+
+\begin{equation}
+-\sin(\theta)\dot{\theta}=0 \, .
+\end{equation}
+
+Away from $\theta=0$ and $\theta=\pi$ this immediately gives $\dot{\theta}=0$. At these two points the equation alone is not enough, since $\sin(\theta)=0$. However, $\nabla_{\dot{\gamma}}(\cos\theta)=0$ tells us that $\cos\theta$ is constant along the curve, and cosine is one-to-one on the defining interval $[0,\pi]$. Therefore $\theta$ itself is constant and $\dot{\theta}=0$ everywhere.
+
+With that, the parallel trasnport operator as used in the above defintion of the shape operator can then be defined as the map
+
+\begin{equation}
+P^\gamma_{s\rightarrow t}:T_{\gamma(s)}S\longrightarrow T_{\gamma(t)}S \, ,
+\end{equation}
+
+which takes a vector $\mathbf{v}\in T_{\gamma(s)}S$ and returns
+
+\begin{equation}
+P^\gamma_{s\rightarrow t}(\mathbf{v})=\mathbf{V}(t) \, ,
+\end{equation}
+
+where $\mathbf{V}$ is the unique vector field along $\gamma$ satisfying
+
+\begin{equation}
+\nabla_{\dot{\gamma}}\mathbf{V}=0 \, ,
+\qquad
+\mathbf{V}(s)=\mathbf{v} \, .
+\end{equation}
+
+In other words, we begin with a vector at $\gamma(s)$, extend it along the curve by demanding that it remains parallel, and then read off the resulting vector at $\gamma(t)$. The operator allows us to compare vectors in two different tangent spaces by moving one of them into the tangent space of the other. Since parallel transport preserves inner products, $P^\gamma_{s\rightarrow t}$ is a linear isometry and satisfies
+
+\begin{equation}
+P^\gamma_{t\rightarrow u}\circ P^\gamma_{s\rightarrow t}
+=P^\gamma_{s\rightarrow u} \, ,
+\qquad
+\left(P^\gamma_{s\rightarrow t}\right)^{-1}
+=P^\gamma_{t\rightarrow s} \, .
+\end{equation}
+
+There is one small but important distinction in the definition of the shape operator above. The normal $\mathbf{n}(\gamma(t))$ is not tangent to the surface, so it cannot be transported by the intrinsic operator $P^\gamma_{s\rightarrow t}$. Instead, the bar in $\overline{P}^\gamma_{s\rightarrow t}$ denotes parallel transport in the ambient space,
+
+\begin{equation}
+\overline{P}^\gamma_{s\rightarrow t}:
+T_{\gamma(s)}\mathbb{R}^3
+\longrightarrow
+T_{\gamma(t)}\mathbb{R}^3 \, .
+\end{equation}
+
+Note that it is defined in exactly the same way, except that the vector field is required to have vanishing ambient covariant derivative. For example, in Euclidean $\mathbb{R}^3$ a parallel transported vector has constant Cartesian components. Once all of the ambient tangent spaces are identified with the same copy of $\mathbb{R}^3$, $\overline{P}^\gamma_{s\rightarrow t}$ is therefore just the identity. Thus, in the earlier definition of the shape operator, $\overline{P}^\gamma_{t\rightarrow 0}\mathbf{n}(\gamma(t))$ is simply the normal at $\gamma(t)$ regarded as a vector at $p=\gamma(0)$, so that it can be subtracted sensibly from $\mathbf{n}(p)$.
+
+I hope that the above is clear. It also hints at the vast underlying geometry, which I'll try not to touch upon, but instead hint at longingly from a distance. With this then we can write the shape operator at $p$ as 
+
+\begin{equation}
+S_p:T_pS\longrightarrow T_pS \, ,
+\qquad
+S_p(\mathbf{v})
+=-\left(\overline{\nabla}_{\mathbf{v}}\mathbf{n}\right)_p
+=-\mathrm{d}\mathbf{n}_p(\mathbf{v}) \, ,
+\end{equation}
+
+where $\mathbf{v}\in T_pS$ is the direction in which we follow the normals and $\mathbf{n}$ is a unit normal field to our surface. I have used the ambient covariant derivative $\overline{\nabla}$ here because $\mathbf{n}$ is not itself tangent to the surface. The negative sign is merely convention.
+
+The derivative of the normal is nevertheless tangent to the surface. This follows from the fact that $\mathbf{n}$ has unit length, since
+
+\begin{equation}
+\left\langle\partial_i\mathbf{n},\mathbf{n}\right\rangle
+=\frac{1}{2}\partial_i
+\left\langle\mathbf{n},\mathbf{n}\right\rangle
+=0 \, .
+\end{equation}
+
+We can now write down the matrix of $S$ in our general coordinate basis. Let
+
+\begin{equation}
+S(\mathbf{e}_j)=S^i{}_j\mathbf{e}_i \, .
+\end{equation}
+
+Differentiating $\langle\mathbf{n},\mathbf{e}_k\rangle=0$ in the $\mathbf{e}_j$ direction gives
+
+\begin{align}
+0
+&=\partial_j\left\langle\mathbf{n},\mathbf{e}_k\right\rangle \\
+&=\left\langle\partial_j\mathbf{n},\mathbf{e}_k\right\rangle
++\left\langle\mathbf{n},\partial_j\mathbf{e}_k\right\rangle \\
+&=\left\langle\partial_j\mathbf{n},\mathbf{e}_k\right\rangle
++b_{jk} \, .
+\end{align}
+
+Therefore
+
+\begin{equation}
+\left\langle S(\mathbf{e}_j),\mathbf{e}_k\right\rangle
+=g_{ki}S^i{}_j
+=b_{jk} \, .
+\end{equation}
+
+Multiplying by the inverse metric raises one index of the second fundamental form and leaves us with
+
+\begin{equation}
+S^i{}_j=g^{ik}b_{kj} \, ,
+\end{equation}
+
+where I have used $b_{jk}=b_{kj}$. Thus the matrix of the shape operator in a general coordinate basis is not simply $b_{ij}$, but rather
+
+\begin{equation}
+S=g^{-1}b \, .
+\end{equation}
+
+Using the coefficients of the two fundamental forms introduced earlier, this is explicitly
+
+\begin{align}
+S
+&=
+\begin{pmatrix}
+E & F \\
+F & G
+\end{pmatrix}^{-1}
+\begin{pmatrix}
+L & M \\
+M & N
+\end{pmatrix} \\
+&=
+\frac{1}{EG-F^2}
+\begin{pmatrix}
+GL-FM & GM-FN \\
+EM-FL & EN-FM
+\end{pmatrix} \, .
+\end{align}
+
+The eigenvalues of this operator are the principal curvatures we met a while back, and its eigenvectors are the principal directions. In an orthonormal principal basis $g$ is the identity and $b$ is diagonal, so this reduces to the matrix I wrote before,
+
+\begin{equation}
+S
+=
+\begin{pmatrix}
+\kappa_1 & 0 \\
+0 & \kappa_2
+\end{pmatrix} \, .
+\end{equation}
+
+An important fact is that since the Gaussian curvature depends on the determinant any coordinate transformation of the form 
+
+\begin{equation}
+S' = P^{-1} S P \, ,
+\end{equation}
+
+preserves the determinant. Thus the Gaussian curvature is an extrinsic geometric invariant, i.e. that it doesnt change if we change how we describe the surface.
+
+### Riemann Tensor and Ricci Curvature
+
+With that lengthy discussion of Gauss over with, we can come to the next man of the hour (or two or three depending on how long it takes me to write this): Bernhard Riemann. 
+
+We have so far understood curvature by placing a surface inside $\mathbb{R}^3$ and watching how its normal vectors change. Riemann's great leap was to ask how we could recognise curvature if we were trapped entirely within the surface, with no normal direction and no surrounding space available to us. Conveniently, we have already introduced exactly the machinery needed to answer this: covariant derivatives and parallel transport.
+
+Imagine taking a tangent vector at some point and parallel transporting it around a very small closed loop. In a flat plane the vector returns pointing in precisely the same direction. On a curved surface this generally does not happen: when the vector returns to its starting point it will have changed, despite having been parallel transported along every individual part of the loop. The failure of the vector to return unchanged is therefore detecting curvature using only measurements made within the surface.
+
+There is an equivalent infinitesimal way to view the same idea. Let $\mathbf{X}$ and $\mathbf{Y}$ be two directions and let $\mathbf{Z}$ be the vector we wish to carry around. We can first differentiate $\mathbf{Z}$ in the $\mathbf{Y}$ direction and then in the $\mathbf{X}$ direction, or perform these operations in the opposite order. If the geometry is flat these two operations agree, whereas on a curved space their difference need not vanish. Curvature is, in this sense, the failure of covariant derivatives to agree. Technically we would say they fail to commute.
+
+We can now make this precise. Let $M$ be our surface for the moment, although everything that follows works on a Riemannian manifold of any dimension, and let $\mathfrak{X}(M)$ denote the collection of smooth vector fields on $M$. Given three vector fields $\mathbf{X},\mathbf{Y},\mathbf{Z}\in\mathfrak{X}(M)$, the Riemann curvature operator is defined by
+
+\begin{equation}
+R(\mathbf{X},\mathbf{Y})\mathbf{Z}
+=
+\nabla_{\mathbf{X}}\nabla_{\mathbf{Y}}\mathbf{Z}
+-\nabla_{\mathbf{Y}}\nabla_{\mathbf{X}}\mathbf{Z}
+-\nabla_{[\mathbf{X},\mathbf{Y}]}\mathbf{Z} \, .
+\end{equation}
+
+The first two terms are the commutator we have just described. The final term contains the *Lie bracket* $[\mathbf{X},\mathbf{Y}]$, which measures the failure of the two vector fields themselves to commute. If you haven't met this object before this is fine, you can think of it in terms of matrices. Marices $A,B$ are said to commute if and only if 
+\begin{equation}
+AB - BA = [A,B] = 0 \, .
+\end{equation}
+In the case of vector fields, it is defined by how it acts on any scalar function $f$,
+
+\begin{equation}
+[\mathbf{X},\mathbf{Y}](f)
+=\mathbf{X}\bigl(\mathbf{Y}(f)\bigr)
+-\mathbf{Y}\bigl(\mathbf{X}(f)\bigr) \, .
+\end{equation}
+
+This correction is necessary because following $\mathbf{X}$ and then $\mathbf{Y}$ does not always bring us to the same point as following $\mathbf{Y}$ and then $\mathbf{X}$. Subtracting $\nabla_{[\mathbf{X},\mathbf{Y}]}\mathbf{Z}$ removes this discrepancy, leaving only the change due to curvature. In we have what is called a coordinate basis, such that $\mathbf{e}_i=\partial_i$, then the basis vectors commute, so $[\mathbf{e}_i,\mathbf{e}_j]=0$ and the final term vanishes. To see this quickly, have these basis vectors act on an arbitrary, differentiable function $f$,
+
+\begin{align}
+[\mathbf{e}_i,\mathbf{e}_j](f)& = \partial_i(\partial_jf) - \partial_j(\partial_if) \\
+& = \partial_i(\partial_jf) - \partial_i(\partial_jf)\\
+& = 0 \, .
+\end{align}
+
+Since $f$ was arbitrary we can say that in general the relation holds for any coordinate basis.
+
+At a first glance $R(\mathbf{X},\mathbf{Y})\mathbf{Z}$ appears to depend on derivatives of the vector fields and not merely on the vectors themselves. However, the derivative terms cancel in precisely such a way that, for any smooth scalar function $f$,
+
+\begin{align}
+R(f\mathbf{X},\mathbf{Y})\mathbf{Z}
+&=fR(\mathbf{X},\mathbf{Y})\mathbf{Z} \, ,\\
+R(\mathbf{X},f\mathbf{Y})\mathbf{Z}
+&=fR(\mathbf{X},\mathbf{Y})\mathbf{Z} \, ,\\
+R(\mathbf{X},\mathbf{Y})(f\mathbf{Z})
+&=fR(\mathbf{X},\mathbf{Y})\mathbf{Z} \, .
+\end{align}
+
+The value of the curvature at a point $p$ therefore depends only on the three tangent vectors at that point, rather than on how we extend them to vector fields nearby. $R$ is called a Tensor, well more specifically, the Riemann Curvature Tensor. A couple properties that will be useful to us are Skew Symmetry and the Bianchi Idenities.
+
+#### Skew Symmetry
+
+Skew symmetry is the fact that if we exhange the two vectors $\mathbf{X}$ and $\mathbf{Y}$ we get
+
+\begin{align}
+R(\mathbf{Y},\mathbf{X})\mathbf{Z}
+&=
+\left[\nabla_{\mathbf{Y}},\nabla_{\mathbf{X}}\right]\mathbf{Z}
+-\nabla_{[\mathbf{Y},\mathbf{X}]}\mathbf{Z} \\
+&=
+-\left(
+\left[\nabla_{\mathbf{X}},\nabla_{\mathbf{Y}}\right]\mathbf{Z}
+-\nabla_{[\mathbf{X},\mathbf{Y}]}\mathbf{Z}
+\right) \\
+&=-R(\mathbf{X},\mathbf{Y})\mathbf{Z} \, .
+\end{align}
+
+where I made use of the facts
+
+\begin{equation}
+[A,B] = -[B,A]\,, \hspace{0.5cm} \nabla_{\lambda X} = \lambda \nabla_X \, .
+\end{equation}
+
+
+This has a nice intuitive meaning. Reversing the orientation of our infinitesimal loop reverses the measured change. 
+
+#### Bianchi Identities
+
+There are two key Bianchi Identities. The first Bianchi Identity is the statement that 
+
+\begin{equation}
+R(\mathbf{X},\mathbf{Y})\mathbf{Z} + R(\mathbf{Y},\mathbf{Z})\mathbf{X} + R(\mathbf{Z},\mathbf{X})\mathbf{Y} =0 \, .
+\end{equation}
+
+This follows from the more fundamental Jacobi Identity for the Lie bracket. Given vectors $x,y,z$ it states that
+
+\begin{equation}
+[x,[y,z]] + [y,[z,x]] + [z,[x,y]] = 0 \, .
+\end{equation}
+
+With this and the defitnion of the Riemann Tensor I suggest you show yourself that this is true. I should add that we assume that the final term in the Riemann tensor vanish, this condition is the "no-torsion" condition for the Levi-Civita connection $\nabla$. It turns out that from the *Fundamental Theorem of Riemannian Geometry* the Levi-Civita connection is *the* unique metric compatible and torsion free connection on our Riemannian manifold. So, we can essentially ignore the final term of the Riemann tensor. 
+
+Okay, so that is the first Bianchi Identity. The one more useful for our needs, namely physics, is the second Bianchi Identity. I'll derive it for fun. I'll assume that we are dealing with the Levi-Civita connection so that I can ignore the torsion term for ease. Differentiating the Riemann tensor yields
+
+\begin{align}
+(\nabla_{\mathbf{X}}R)(\mathbf{Y},\mathbf{Z})\mathbf{W}
+&=
+\nabla_{\mathbf{X}}
+\left(R(\mathbf{Y},\mathbf{Z})\mathbf{W}\right)
+-R(\nabla_{\mathbf{X}}\mathbf{Y},\mathbf{Z})\mathbf{W} \\
+&\quad
+-R(\mathbf{Y},\nabla_{\mathbf{X}}\mathbf{Z})\mathbf{W}
+-R(\mathbf{Y},\mathbf{Z})\nabla_{\mathbf{X}}\mathbf{W} \\
+&=
+\left[\nabla_{\mathbf{X}},R(\mathbf{Y},\mathbf{Z})\right]\mathbf{W}
+-R(\nabla_{\mathbf{X}}\mathbf{Y},\mathbf{Z})\mathbf{W}
+-R(\mathbf{Y},\nabla_{\mathbf{X}}\mathbf{Z})\mathbf{W} \, .
+\end{align}
+
+Adding cyclic permutations of this you can find, after some admittedly tedious algebra, 
+
+\begin{align}
+&\Bigl(
+(\nabla_{\mathbf{X}}R)(\mathbf{Y},\mathbf{Z})
++(\nabla_{\mathbf{Y}}R)(\mathbf{Z},\mathbf{X})
++(\nabla_{\mathbf{Z}}R)(\mathbf{X},\mathbf{Y})
+\Bigr)\mathbf{W} \\
+&=
+\Bigl(
+\left[\nabla_{\mathbf{X}},R(\mathbf{Y},\mathbf{Z})\right]
++\left[\nabla_{\mathbf{Y}},R(\mathbf{Z},\mathbf{X})\right]
++\left[\nabla_{\mathbf{Z}},R(\mathbf{X},\mathbf{Y})\right]
+\Bigr)\mathbf{W} \\
+&\quad
+-\Bigl(
+R(\nabla_{\mathbf{X}}\mathbf{Y},\mathbf{Z})
++R(\mathbf{Z},\nabla_{\mathbf{Y}}\mathbf{X}) \\
+&\qquad\quad
++R(\mathbf{Y},\nabla_{\mathbf{X}}\mathbf{Z})
++R(\nabla_{\mathbf{Z}}\mathbf{X},\mathbf{Y}) \\
+&\qquad\quad
++R(\nabla_{\mathbf{Y}}\mathbf{Z},\mathbf{X})
++R(\mathbf{X},\nabla_{\mathbf{Z}}\mathbf{Y})
+\Bigr)\mathbf{W} \\
+&=
+\Bigl(
+\left[\nabla_{\mathbf{X}},R(\mathbf{Y},\mathbf{Z})\right]
++\left[\nabla_{\mathbf{Y}},R(\mathbf{Z},\mathbf{X})\right]
++\left[\nabla_{\mathbf{Z}},R(\mathbf{X},\mathbf{Y})\right]
+\Bigr)\mathbf{W} \\
+&=
+\Bigl(
+\left[\nabla_{\mathbf{X}},
+\left[\nabla_{\mathbf{Y}},\nabla_{\mathbf{Z}}\right]\right]
++\left[\nabla_{\mathbf{Y}},
+\left[\nabla_{\mathbf{Z}},\nabla_{\mathbf{X}}\right]\right]
++\left[\nabla_{\mathbf{Z}},
+\left[\nabla_{\mathbf{X}},\nabla_{\mathbf{Y}}\right]\right]
+\Bigr)\mathbf{W} \\
+& = 0 \, ,
+\end{align}
+
+which vanishes exactly from the Jacobi identity (yay!). So, 
+\begin{equation}
+(\nabla_{\mathbf{X}}R)(\mathbf{Y},\mathbf{Z})
++(\nabla_{\mathbf{Y}}R)(\mathbf{Z},\mathbf{X})
++(\nabla_{\mathbf{Z}}R)(\mathbf{X},\mathbf{Y})
+=0 \, .
+\end{equation}
+
+#### Riemann Tensor in Coordinates
+
+I have so far decided to discuss this tensor in coordinate free language in order to show you that the above properties are purely geometric in nature. Next then I think it would be good to see what it looks like locally in some coordinate system (since we can in general only define sensible coordinates within a certain patch of our surface/manifold). 
+
+I'll choose the coordinate basis yet again, so that $[\partial_\mu,\partial_\nu]=0$, and choose the connection to be the Levi-Civita connection because I like having an easy life. The Riemann tensor is then 
+
+\begin{align}
+R(\partial_\mu,\partial_\nu)\partial_\rho
+&= \nabla_\mu \nabla_\nu(\partial_\rho)
+- \nabla_\nu \nabla_\mu(\partial_\rho) \\
+&= \nabla_\mu
+\left(\Gamma^\kappa{}_{\nu\rho}\partial_\kappa\right)
+- \nabla_\nu
+\left(\Gamma^\kappa{}_{\mu\rho}\partial_\kappa\right) \, .
+\end{align}
+
+Using the product rule and the fact that
+$\nabla_\mu\partial_\kappa=\Gamma^\sigma{}_{\mu\kappa}\partial_\sigma$, I find
+
+\begin{align}
+R(\partial_\mu,\partial_\nu)\partial_\rho
+&= \left(\partial_\mu\Gamma^\kappa{}_{\nu\rho}\right)
+\partial_\kappa
++\Gamma^\kappa{}_{\nu\rho}
+\Gamma^\sigma{}_{\mu\kappa}\partial_\sigma \\
+&\quad
+-\left(\partial_\nu\Gamma^\kappa{}_{\mu\rho}\right)
+\partial_\kappa
+-\Gamma^\kappa{}_{\mu\rho}
+\Gamma^\sigma{}_{\nu\kappa}\partial_\sigma \\
+&=\left(
+\partial_\mu\Gamma^\sigma{}_{\nu\rho}
+-\partial_\nu\Gamma^\sigma{}_{\mu\rho}
++\Gamma^\sigma{}_{\mu\kappa}\Gamma^\kappa{}_{\nu\rho}
+-\Gamma^\sigma{}_{\nu\kappa}\Gamma^\kappa{}_{\mu\rho}
+\right)\partial_\sigma \, .
+\end{align}
+
+In the last line I have just relabelled the dummy indices so that I can collect everything into the same basis vector. Defining the components of the Riemann tensor by
+
+\begin{equation}
+R(\partial_\mu,\partial_\nu)\partial_\rho
+=R^\sigma{}_{\rho\mu\nu}\partial_\sigma \, ,
+\end{equation}
+
+I finally get
+
+\begin{equation}
+
+R^\sigma{}_{\rho\mu\nu}
+=\partial_\mu\Gamma^\sigma{}_{\nu\rho}
+-\partial_\nu\Gamma^\sigma{}_{\mu\rho}
++\Gamma^\sigma{}_{\mu\kappa}\Gamma^\kappa{}_{\nu\rho}
+-\Gamma^\sigma{}_{\nu\kappa}\Gamma^\kappa{}_{\mu\rho}
+\, .
+\end{equation}
+
+This is the local coordinate form of the Riemann tensor. Notice that exchanging $\mu$ and $\nu$ gives an overall minus sign, exactly as we should expect from the skew symmetry derived above. In certain coordinate systems this expression simpliefies greatly, such as Riemann Normal coordinates (but more on this in the proceeding section). 
+
+I appreciate that this section is rather long. But, I think it's worth it to make the physical applications as clear and satisfying as possible. Now, onto the Ricci Tensor and Ricci Curvature. 
+
+
+#### Ricci Tensor
+
+So I have the Riemann tensor with its 4-indicies. A great man and mathematician (in the trumpiest voice I can do) -  Gregorio Ricci-Curbastro - investigated the geometric invariant quantity formed by taking the trace of the Riemann tensor and found the *Ricci Tensor*. It measures the curvature by understanding how volumes of balls compare to Euclidean space
+
+Using the metric I could write it as 
+
+\begin{equation}
+R_{\mu \nu } = g^{\alpha \beta}R_{\alpha \mu \beta \nu}  = R^{\alpha}_{\mu \alpha \nu} \, .
+\end{equation}
+
+
+You can derive a coordinate expression for this tensor, similar to that of the Riemann tensor, but I will fight the urge to do so and leave it for you to either google or show yourself. Anyway, what is the geometric intuition behind this object? To think about that I have to discuss Riemann normal coordinates as hinted to just now. 
+
+Riemann normal coordinates are a lovely set of coordinates in which our coordinate chart (i.e. the coordinates we assing to the space near a point) is centered at $p$, where $p$ is a point on our manifold. I could write this as 
+
+\begin{equation}
+x^i(p) = 0. 
+\end{equation}
+
+With this, the metric at $p$ is flat in this coordinate system up to second order terms so that 
+
+\begin{equation}
+g_{ij} = \delta_{ij} - \frac{1}{3}R_{ikjl}x^kx^l + \cdots \, .
+\end{equation}
+
+We can then consider how the volume associated with this metric compares to Euclidean space. The volume measure of integration can be written as 
+
+\begin{equation}
+\sqrt{g} \, \text{d}^nx \, ,
+\end{equation}
+
+where $g = \det(g_{ij})$ and $n$ is the dimension of our manifold. This is the measure we integrate over. For example, the measure in Euclidean space is just the usual $\text{d}^nx$. To see what happens in our Riemann normal coordinates I can use the fact that, for a matrix close to the identity,
+
+\begin{equation}
+\det(I+A)=1+\operatorname{tr}(A)+\cdots \, .
+\end{equation}
+
+Applying this to the expansion of the metric gives
+
+\begin{align}
+g
+&=1-\frac{1}{3}\delta^{ij}R_{ikjl}x^kx^l+\cdots \\
+&=1-\frac{1}{3}R_{kl}x^kx^l+\cdots \, .
+\end{align}
+
+Taking the square root I then get
+
+\begin{equation}
+\sqrt{g}
+=1-\frac{1}{6}R_{kl}x^kx^l+\cdots \, .
+\end{equation}
+
+This is lovely because the Ricci tensor has appeared naturally just by asking how the volume differs from the Euclidean one. To make the directional meaning clear, let $v$ be a unit vector at $p$ and move a small distance $r$ in this direction, so that $x^i=rv^i$. The volume factor becomes
+
+\begin{equation}
+\sqrt{g}
+=1-\frac{r^2}{6}R_{ij}v^iv^j+\cdots \, .
+\end{equation}
+
+With this expansion, we can write the volume form (also called the top form) as 
+\begin{equation}
+\sqrt{g} \, \text{d}^nx = \left(1-\frac{r^2}{6}R_{ij}v^iv^j+\cdots\right) \, \text{d}^nx \, .
+\end{equation}
+So clearly if $R_{ij}v^iv^j$ is positive, nearby volumes are smaller than their Euclidean counterparts in the direction $v$. If it is negative they are larger. The Ricci tensor is therefore retaining directional information about how the geometry distorts volume.
+
+We can also average over every direction by considering a small geodesic ball $B_r(p)$ of radius $r$ centred at $p$. Integrating the above volume measure gives
+
+\begin{equation}
+\operatorname{Vol}(B_r(p))
+=\omega_n r^n
+\left[
+1-\frac{R(p)}{6(n+2)}r^2+O(r^4)
+\right] \, ,
+\end{equation}
+
+where $\omega_n$ is the volume of the unit ball in $n$-dimensional Euclidean space and
+
+\begin{equation}
+R=g^{ij}R_{ij}
+\end{equation}
+
+is the Ricci scalar. Positive Ricci scalar curvature therefore makes a sufficiently small geodesic ball have less volume than the corresponding Euclidean ball, while negative Ricci scalar curvature makes it have more. The Ricci tensor tells us this direction by direction, whereas its trace $R$ gives, up to an overall factor, the average over all directions.
+
+Okay, so where do the geodesics come into this? Take the geodesic $\gamma(t)$ which begins at $p$ with unit tangent $v$, and imagine a small family of neighbouring geodesics beginning at the same point. Their separation is described by Jacobi fields $J_a(t)$, where I choose the initial directions $e_a$ to be orthogonal to $v$. These satisfy
+
+\begin{equation}
+\frac{D^2J_a}{dt^2}
++R(J_a,\dot{\gamma})\dot{\gamma}=0 \, ,
+\end{equation}
+
+with $J_a(0)=0$ and $DJ_a/dt(0)=e_a$. Comparing vectors at different points using parallel transport along $\gamma$, the solution close to $p$ is
+
+\begin{equation}
+J_a(t)
+=t e_a - \frac{t^3}{6}R(e_a,v)v+\cdots \, .
+\end{equation}
+
+The cross-sectional volume spanned by these separation vectors is then
+
+\begin{equation}
+\mathcal{A}_v(t)
+=t^{n-1}
+\left[
+1-\frac{t^2}{6}\operatorname{Ric}(v,v)+\cdots
+\right] \, .
+\end{equation}
+
+This gives the other geometric meaning of the Ricci tensor. Positive $\operatorname{Ric}(v,v)$ makes a bundle of geodesics travelling in the direction $v$ focus relative to the flat case, while negative $\operatorname{Ric}(v,v)$ makes it spread out. It is worth stressing that this is the net effect after summing over all directions perpendicular to $v$. The full Riemann tensor contains the individual tidal distortions, while the Ricci tensor records their trace.
+
+So, the two pictures are really the same. The Ricci tensor measures the infinitesimal distortion of volume in a particular direction, or equivalently the net convergence or divergence of a family of nearby geodesics moving in that direction. Taking its trace then removes the remaining directional dependence and tells us how the volume of a small geodesic ball differs from the one we would find in flat space.
+
+## Curvature and Physics
+
+Given the lengthy introduction above to the numerous types of curvature, I will now give a view of why it is useful and necessary in phyiscs. I also want to try and convince you of the theoretical power of geometry in physics.
+
+
+### Newtonian Mechanics and Curvature
+
+Newtonian mechanics was clearly a tremendous achievement in both physics and mathematics. Its laws of motion and forces are incredibly predictive. You will not find an engineer constructing a bridge using anything more than an advanced version of newtonian thinking. This is because for our everyday motions and forces Newton describes it almost exactly. We typically think of Newtonian mechanics as exisiting within flat Euclidean space, however, we can place Newtonian gravity onto a curved manifold. This is the domain of Newton-Cartan theory. 
+
+#### Newton-Cartan Theory
