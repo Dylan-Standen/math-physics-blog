@@ -1,0 +1,43 @@
+---
+title: "Not Boring Movies"
+description: "A selection with two predicates, then an ordering, which sits outside relational algebra."
+problem: 620
+source: LeetCode
+difficulty: Easy
+date: "2026-11-25"
+categories: [selection, ordering, "NULL"]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/not-boring-movies/)
+
+## Problem
+
+`Cinema` lists movies with an `id`, a name, a `description` and a `rating`. Report the movies with an odd `id` whose description is not `'boring'`, ordered by rating from highest to lowest.
+
+## Formalisation
+
+Let $C \subseteq \mathbb{N} \times M \times D \times \mathbb{R}$ be the table, with tuples $(i, m, d, r)$. First filter, then project:
+
+$$
+\pi_{i,m,d,r}\big(\sigma_{\,i \equiv 1 \ (\mathrm{mod}\ 2)\ \wedge\ d \neq \text{boring}}(C)\big) = \{(i,m,d,r) \in C \mid i \text{ odd},\ d \neq \text{boring}\}.
+$$
+
+The projection keeps every column, so here it is the identity and the answer is just the selection.
+
+The ordering is not part of the algebra: a relation is an unordered set, so `ORDER BY` turns the result into a sequence $(t_1, t_2, \dots)$ with $t_k.r \ge t_{k+1}.r$. That is why ordering always comes last, after the set has been built.
+
+## Solution
+
+```sql
+SELECT c.id, c.movie, c.description, c.rating
+FROM Cinema c
+WHERE c.id % 2 != 0 AND c.description != 'boring'
+ORDER BY c.rating DESC;
+```
+
+## Pitfalls
+
+- **Order by the column the question asks for.** My first version used `ORDER BY c.id DESC`, which passes the example only by coincidence: there, ids 5 and 1 have ratings 9.1 and 8.9, so both orderings agree.
+- **`!= 0` is safer than `= 1` for odd numbers.** In MySQL, `-3 % 2 = -1`, so `id % 2 = 1` would miss negative odd ids. Ids here are positive, but the habit is worth keeping. `MOD(id, 2)` behaves the same way.
+- **`!=` silently drops NULLs.** If a description were NULL, `description != 'boring'` would be UNKNOWN and `WHERE` would discard the row, even though a missing description is not "boring". To keep such rows, write `(description != 'boring' OR description IS NULL)`.
+- **`!=` and `<>` are the same.** `<>` is the SQL standard; both work in MySQL.
