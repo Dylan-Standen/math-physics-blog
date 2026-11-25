@@ -1,0 +1,55 @@
+---
+title: "Project Employees I"
+description: "An inner join seen as a fibre product, then a mean over each project's fibre."
+problem: 1075
+source: LeetCode
+difficulty: Easy
+date: "2026-11-25"
+categories: [inner join, aggregation]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/project-employees-i/)
+
+## Problem
+
+`Project` records which employees work on which project (`project_id`, `employee_id`); `Employee` gives each employee's `name` and `experience_years`. For each project, report the average experience of its employees, rounded to two decimal places.
+
+## Formalisation
+
+Let $P$ be the project table and $E$ the employee table, and let $f : P \to I$ and $g : E \to I$ read off the employee id. The join is the **fibre product** (pullback) of $P \xrightarrow{f} I \xleftarrow{g} E$:
+
+$$
+P \times_I E = \{(p, e) \in P \times E \mid f(p) = g(e)\}.
+$$
+
+Written with `ON`, SQL keeps every coordinate of both factors, giving 5-tuples $(\mathrm{pid}, \mathrm{eid}, \mathrm{eid}', \mathrm{name}, \mathrm{exp})$ with $\mathrm{eid} = \mathrm{eid}'$. Projecting out the redundant coordinate is a bijection onto the "glued" 4-tuples, which is what `JOIN ... USING (employee_id)` returns.
+
+The fibre product is taken fibre by fibre, $(P \times_I E)_i = f^{-1}(i) \times g^{-1}(i)$, so its size is
+
+$$
+|P \times_I E| = \sum_{i \in I} |f^{-1}(i)|\,|g^{-1}(i)|.
+$$
+
+Since `employee_id` is the key of `Employee`, every $|g^{-1}(i)| \le 1$: the join attaches an employee to each project row and never multiplies rows.
+
+Grouping by project then partitions the joined set into the classes $E_j = \{(p,e) \mid p.\mathrm{pid} = j\}$, and the answer is the mean over each class:
+
+$$
+\bar x_j = \frac{1}{|E_j|} \sum_{(p,e) \in E_j} e.\mathrm{exp}.
+$$
+
+## Solution
+
+```sql
+SELECT p.project_id,
+  ROUND(AVG(e.experience_years), 2) AS average_years
+FROM Project p
+JOIN Employee e ON p.employee_id = e.employee_id
+GROUP BY p.project_id;
+```
+
+## Pitfalls
+
+- **`ON` keeps both id columns; `USING` merges them.** `SELECT *` on an `ON` join shows `employee_id` twice. Harmless for an inner join, but after a `LEFT JOIN` the two columns differ (one can be NULL), so choose which one to select.
+- **Check the key before trusting an aggregate.** The row-count formula above is why this `AVG` is correct: each project row matches at most one employee. Join on a non-key column and rows multiply, which silently reweights `AVG` and inflates `SUM`.
+- **An inner join is enough here.** Every `employee_id` in `Project` exists in `Employee`, and projects with no employees never appear in `Project`, so no rows need to be kept with NULL padding.
