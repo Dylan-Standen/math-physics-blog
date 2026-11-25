@@ -259,7 +259,7 @@ window.Quarto = {
 <p><span class="math display">\[
 \sigma_{\,e.\mathrm{id} = m.\mathrm{rep}}(E \times E) = \{(e, m) \in E \times E \mid m.\mathrm{rep} = e.\mathrm{id}\}.
 \]</span></p>
-<p>My query writes exactly this: <code>JOIN</code> with no <code>ON</code> is the Cartesian product <span class="math inline">\(E \times E\)</span>, and the <code>WHERE</code> is the selection.</p>
+<p>The <code>ON</code> clause is the selection condition. My first version made this literal: <code>JOIN</code> with no <code>ON</code> is the Cartesian product <span class="math inline">\(E \times E\)</span>, and a <code>WHERE</code> then applied the selection.</p>
 <p>Grouping by the manager gives, for each <span class="math inline">\(e\)</span>, the fibre of their direct reports</p>
 <p><span class="math display">\[
 R(e) = \{\, m \in E \mid m.\mathrm{rep} = e.\mathrm{id} \,\},
@@ -276,10 +276,10 @@ R(e) = \{\, m \in E \mid m.\mathrm{rep} = e.\mathrm{id} \,\},
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> reports_count,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ROUND</span>(<span class="fu">SUM</span>(m.age)<span class="op">/</span><span class="fu">COUNT</span>(<span class="op">*</span>)) <span class="kw">AS</span> average_age</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> Employees e</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> Employees m <span class="kw">WHERE</span> e.employee_id <span class="op">=</span> m.reports_to</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> Employees m <span class="kw">ON</span> e.employee_id <span class="op">=</span> m.reports_to</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> e.employee_id</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> e.employee_id <span class="kw">ASC</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The same query in the conventional form, with the join condition in <code>ON</code>, <code>AVG</code> for the mean, and aliases named after their roles:</p>
+<p>The same query with <code>AVG</code> for the mean and aliases named after their roles:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> mgr.employee_id, mgr.name,</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> reports_count,</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ROUND</span>(<span class="fu">AVG</span>(rep.age)) <span class="kw">AS</span> average_age</span>
@@ -291,7 +291,7 @@ R(e) = \{\, m \in E \mid m.\mathrm{rep} = e.\mathrm{id} \,\},
 <section id="pitfalls" class="level2">
 <h2 class="anchored" data-anchor-id="pitfalls">Pitfalls</h2>
 <ul>
-<li><strong><code>JOIN</code> without <code>ON</code> is a cross join in MySQL.</strong> Adding the condition in <code>WHERE</code> turns it into the inner join, so the query is correct. Putting the condition in <code>ON</code> is clearer, and it is required for a <code>LEFT JOIN</code>, where a <code>WHERE</code> condition on the right-hand table would cancel the outer join (see 1251).</li>
+<li><strong>Put the join condition in <code>ON</code>.</strong> My first version used <code>JOIN ... WHERE</code>. In MySQL a <code>JOIN</code> without <code>ON</code> is a cross join, and the <code>WHERE</code> turned it into the inner join, so it gave the same answer. <code>ON</code> is clearer, and it is required for a <code>LEFT JOIN</code>, where a <code>WHERE</code> condition on the right-hand table would cancel the outer join (see 1251).</li>
 <li><strong>Name aliases by role.</strong> Here <code>m</code> is the <em>report</em>, not the manager. <code>mgr</code> and <code>rep</code> make it impossible to mix them up.</li>
 <li><strong><code>SUM(age)/COUNT(*)</code> is <code>AVG(age)</code>.</strong> Both give 38.5 for ages 41 and 36, which rounds to 39.</li>
 <li><strong>Rounding depends on the type.</strong> The average of integer ages is an exact decimal, and MySQL rounds exact values half away from zero (38.5 → 39). For floating-point values, <code>ROUND</code> follows the C library, which on many systems rounds half to even.</li>
