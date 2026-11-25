@@ -10,7 +10,38 @@
 <atom:link href="https://dylan-standen.github.io/math-physics-blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Notes and expository articles on mathematical and theoretical physics</description>
 <generator>quarto-1.10.18</generator>
-<lastBuildDate>Wed, 19 Aug 2026 23:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 13 Nov 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>The Physics of Beer Foam</title>
+  <dc:creator>Dylan Standen</dc:creator>
+  <link>https://dylan-standen.github.io/math-physics-blog/posts/The-Physics-of-beer/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Who doesn’t love a good (ice-cold) beer? I certainly do, and if you have ever wondered if there is a mathematical way to describe the foam from pouring a beer, then you have come to right place. In this post I am going to explore and explain the Physics that make this effect occur and how we can describe it mathematically. Towards the end I will discuss the surprisingly deep overlap with integrable systems - systems which are exactly solvable, by which we mean we can integrate them to attain a solution.</p>
+<section id="the-advent-of-beer" class="level2">
+<h2 class="anchored" data-anchor-id="the-advent-of-beer">The Advent of Beer</h2>
+<p>Beer is one of the oldest alcoholic beverages. It’s root stretch back to at least 13,000, with the Natufians consuming a beer-like beverage during ritual ceremonies. Obviously since then, peoples across the world have been fermenting grain and hops in order to create the beautiful golden drink we know today.</p>
+<p>Enough about the history of beer and onto maths. I should note that I will not be covering the chemistry/physics of how the foam actually forms, I will instead be focussing on the mathematical laws that govern its behavior.</p>
+</section>
+<section id="foam-drainage-equation" class="level2">
+<h2 class="anchored" data-anchor-id="foam-drainage-equation">Foam Drainage Equation</h2>
+<p>The dynamics of how Foam evolves, known as the foam drainage equation (or law) was first formalised in 1996 with the work by Verbist, Weaire &amp; Kraynik.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>Mathematical Physics</category>
+  <category>Integrability</category>
+  <category>Beer</category>
+  <guid>https://dylan-standen.github.io/math-physics-blog/posts/The-Physics-of-beer/</guid>
+  <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://dylan-standen.github.io/math-physics-blog/posts/The-Physics-of-beer/thumbnail/Foam-main.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Curvature, Curvature, Curvature!</title>
   <dc:creator>Dylan Standen</dc:creator>

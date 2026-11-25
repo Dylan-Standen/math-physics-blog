@@ -2,7 +2,20 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/The-Physics-of-beer/index.html",
       "/posts/curvature-as-a-commutator/index.html"
+    ]
+  },
+  {
+    "listing": "/sql.html",
+    "items": [
+      "/sql/0197-rising-temperature.html",
+      "/sql/1068-product-sales-analysis-i.html",
+      "/sql/1251-average-selling-price.html",
+      "/sql/1378-replace-employee-id-with-the-unique-identifier.html",
+      "/sql/1581-customer-who-visited-but-did-not-make-any-transactions.html",
+      "/sql/1757-recyclable-and-low-fat-products.html",
+      "/sql/1934-confirmation-rate.html"
     ]
   }
 ]
