@@ -22,7 +22,7 @@ $$
 \sigma_{\,e.\mathrm{id} = m.\mathrm{rep}}(E \times E) = \{(e, m) \in E \times E \mid m.\mathrm{rep} = e.\mathrm{id}\}.
 $$
 
-My query writes exactly this: `JOIN` with no `ON` is the Cartesian product $E \times E$, and the `WHERE` is the selection.
+The `ON` clause is the selection condition. My first version made this literal: `JOIN` with no `ON` is the Cartesian product $E \times E$, and a `WHERE` then applied the selection.
 
 Grouping by the manager gives, for each $e$, the fibre of their direct reports
 
@@ -45,12 +45,12 @@ SELECT e.employee_id, e.name,
   COUNT(*) AS reports_count,
   ROUND(SUM(m.age)/COUNT(*)) AS average_age
 FROM Employees e
-JOIN Employees m WHERE e.employee_id = m.reports_to
+JOIN Employees m ON e.employee_id = m.reports_to
 GROUP BY e.employee_id
 ORDER BY e.employee_id ASC;
 ```
 
-The same query in the conventional form, with the join condition in `ON`, `AVG` for the mean, and aliases named after their roles:
+The same query with `AVG` for the mean and aliases named after their roles:
 
 ```sql
 SELECT mgr.employee_id, mgr.name,
@@ -64,7 +64,7 @@ ORDER BY mgr.employee_id;
 
 ## Pitfalls
 
-- **`JOIN` without `ON` is a cross join in MySQL.** Adding the condition in `WHERE` turns it into the inner join, so the query is correct. Putting the condition in `ON` is clearer, and it is required for a `LEFT JOIN`, where a `WHERE` condition on the right-hand table would cancel the outer join (see 1251).
+- **Put the join condition in `ON`.** My first version used `JOIN ... WHERE`. In MySQL a `JOIN` without `ON` is a cross join, and the `WHERE` turned it into the inner join, so it gave the same answer. `ON` is clearer, and it is required for a `LEFT JOIN`, where a `WHERE` condition on the right-hand table would cancel the outer join (see 1251).
 - **Name aliases by role.** Here `m` is the *report*, not the manager. `mgr` and `rep` make it impossible to mix them up.
 - **`SUM(age)/COUNT(*)` is `AVG(age)`.** Both give 38.5 for ages 41 and 36, which rounds to 39.
 - **Rounding depends on the type.** The average of integer ages is an exact decimal, and MySQL rounds exact values half away from zero (38.5 → 39). For floating-point values, `ROUND` follows the C library, which on many systems rounds half to even.
