@@ -105,74 +105,109 @@
     "text": "Pitfalls\nMy attempt had the right structure but two bugs:\n\na &lt;= b &lt;= c does not mean what it does in maths. SQL evaluates it as (a &lt;= b) &lt;= c: the first comparison returns 1 or 0, which is then compared with a date. Write b BETWEEN a AND c (inclusive at both ends) or a &lt;= b AND b &lt;= c.\nA condition on the right-hand table in WHERE turns a LEFT JOIN into an inner join. For a product with no sales, u.purchase_date is NULL, every comparison with it is UNKNOWN, and WHERE discards the row. Conditions in ON decide how rows pair up; conditions in WHERE remove rows afterwards.\nJoin on the date range, not just product_id. Joining on product_id alone pairs every sale with every price period and inflates the totals.\nNo sales means both sums are NULL. IFNULL(..., 0) turns the result into the required 0."
   },
   {
-    "objectID": "sql/1068-product-sales-analysis-i.html",
-    "href": "sql/1068-product-sales-analysis-i.html",
-    "title": "Product Sales Analysis I",
+    "objectID": "sql/0610-triangle-judgement.html",
+    "href": "sql/0610-triangle-judgement.html",
+    "title": "Triangle Judgement",
     "section": "",
     "text": "Problem on LeetCode"
   },
   {
-    "objectID": "sql/1068-product-sales-analysis-i.html#problem",
-    "href": "sql/1068-product-sales-analysis-i.html#problem",
-    "title": "Product Sales Analysis I",
+    "objectID": "sql/0610-triangle-judgement.html#problem",
+    "href": "sql/0610-triangle-judgement.html#problem",
+    "title": "Triangle Judgement",
     "section": "Problem",
-    "text": "Problem\nSales records each sale (sale_id, product_id, year, quantity, price); Product maps product_id to product_name. For every sale, report the product name, year and price."
+    "text": "Problem\nEach row of Triangle holds three positive lengths x, y, z. For every row, report whether the three segments can form a triangle ('Yes' or 'No')."
   },
   {
-    "objectID": "sql/1068-product-sales-analysis-i.html#formalisation",
-    "href": "sql/1068-product-sales-analysis-i.html#formalisation",
-    "title": "Product Sales Analysis I",
+    "objectID": "sql/0610-triangle-judgement.html#formalisation",
+    "href": "sql/0610-triangle-judgement.html#formalisation",
+    "title": "Triangle Judgement",
     "section": "Formalisation",
-    "text": "Formalisation\nWith \\(S\\) for Sales and \\(P\\) for Product, pair each sale with its product and project:\n\\[\n\\pi_{\\,p.\\mathrm{name},\\ s.\\mathrm{year},\\ s.\\mathrm{price}}\\Big(\\{(s,p) \\in S \\times P \\mid s.\\mathrm{product\\_id} = p.\\mathrm{product\\_id}\\}\\Big).\n\\]\nSince product_id is the key of Product, each sale matches exactly one product, so there is one output row per sale."
+    "text": "Formalisation\nThis is not a selection: every row is kept. Instead each tuple is extended by a computed value, a generalised projection\n\\[\n\\pi_{\\,x,\\,y,\\,z,\\,\\chi(x,y,z)}(T), \\qquad\n\\chi(x,y,z) =\n\\begin{cases}\n\\text{Yes}, & x + y &gt; z \\ \\wedge\\ x + z &gt; y \\ \\wedge\\ y + z &gt; x, \\\\\n\\text{No}, & \\text{otherwise.}\n\\end{cases}\n\\]\nThe three inequalities collapse to one. Without loss of generality let \\(z = \\max(x,y,z)\\). Then \\(x + z &gt; z \\ge y\\) and \\(y + z &gt; z \\ge x\\) (all lengths are positive), so the second and third inequalities hold automatically and only \\(x + y &gt; z\\) can fail. Hence\n\\[\n\\chi(x,y,z) = \\text{Yes} \\iff x + y + z &gt; 2\\max(x,y,z).\n\\]\nThis also explains my first attempt: testing only \\(x + y &gt; z\\) is correct exactly when \\(z\\) happens to be the longest side."
   },
   {
-    "objectID": "sql/1068-product-sales-analysis-i.html#solution",
-    "href": "sql/1068-product-sales-analysis-i.html#solution",
-    "title": "Product Sales Analysis I",
+    "objectID": "sql/0610-triangle-judgement.html#solution",
+    "href": "sql/0610-triangle-judgement.html#solution",
+    "title": "Triangle Judgement",
     "section": "Solution",
-    "text": "Solution\nSELECT p.product_name, s.year, s.price\nFROM Sales s\nJOIN Product p ON p.product_id = s.product_id;\nIf you do want a named intermediate result, the syntax is a common table expression, written before the query that uses it:\nWITH Output AS (\n    SELECT p.product_name, s.year, s.price\n    FROM Sales s\n    JOIN Product p ON p.product_id = s.product_id\n)\nSELECT product_name, year, price FROM Output;"
+    "text": "Solution\nSELECT x, y, z,\n  CASE\n    WHEN x + y &gt; z AND x + z &gt; y AND y + z &gt; x THEN 'Yes'\n    ELSE 'No'\n  END AS triangle\nFROM Triangle;\nThe single-test version from the formalisation:\nSELECT x, y, z,\n  CASE WHEN x + y + z &gt; 2 * GREATEST(x, y, z) THEN 'Yes' ELSE 'No' END AS triangle\nFROM Triangle;"
   },
   {
-    "objectID": "sql/1068-product-sales-analysis-i.html#pitfalls",
-    "href": "sql/1068-product-sales-analysis-i.html#pitfalls",
-    "title": "Product Sales Analysis I",
+    "objectID": "sql/0610-triangle-judgement.html#pitfalls",
+    "href": "sql/0610-triangle-judgement.html#pitfalls",
+    "title": "Triangle Judgement",
     "section": "Pitfalls",
-    "text": "Pitfalls\n\nAS name after a query is not valid. A query is named with WITH name AS (...), or as a subquery FROM (SELECT ...) AS name.\nSELECT * inside a CTE can fail. Both tables have a product_id column, so the CTE would have two columns with the same name (“Duplicate column name”).\nTwo statements need a ; between them.\nSQL is not executed in the order it is written. The logical order is FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY, which is why aliases defined in FROM can be used in SELECT."
+    "text": "Pitfalls\n\nCheck all three inequalities, not one. My first version treated z as the special side and tested only x + y &lt;= z, which passes whenever z is the longest side and fails otherwise (8 of 11 tests passed).\nThe inequality is strict. If \\(x + y = z\\) the “triangle” is flat (degenerate), so the answer is 'No'.\nABS is unnecessary. The values are lengths, so they are positive.\nGREATEST is not MAX. GREATEST(x, y, z) takes the largest of several values in one row; MAX(col) is an aggregate over many rows.\nCASE builds a column; WHERE removes rows. Here every row must appear in the output, so the condition goes in a CASE, not a WHERE."
   },
   {
-    "objectID": "sql/1757-recyclable-and-low-fat-products.html",
-    "href": "sql/1757-recyclable-and-low-fat-products.html",
-    "title": "Recyclable and Low Fat Products",
+    "objectID": "sql/1075-project-employees-i.html",
+    "href": "sql/1075-project-employees-i.html",
+    "title": "Project Employees I",
     "section": "",
     "text": "Problem on LeetCode"
   },
   {
-    "objectID": "sql/1757-recyclable-and-low-fat-products.html#problem",
-    "href": "sql/1757-recyclable-and-low-fat-products.html#problem",
-    "title": "Recyclable and Low Fat Products",
+    "objectID": "sql/1075-project-employees-i.html#problem",
+    "href": "sql/1075-project-employees-i.html#problem",
+    "title": "Project Employees I",
     "section": "Problem",
-    "text": "Problem\nA Products table records, for each product_id, whether the product is low fat and whether it is recyclable (each 'Y' or 'N'). Return the ids of products that are both."
+    "text": "Problem\nProject records which employees work on which project (project_id, employee_id); Employee gives each employee’s name and experience_years. For each project, report the average experience of its employees, rounded to two decimal places."
   },
   {
-    "objectID": "sql/1757-recyclable-and-low-fat-products.html#formalisation",
-    "href": "sql/1757-recyclable-and-low-fat-products.html#formalisation",
-    "title": "Recyclable and Low Fat Products",
+    "objectID": "sql/1075-project-employees-i.html#formalisation",
+    "href": "sql/1075-project-employees-i.html#formalisation",
+    "title": "Project Employees I",
     "section": "Formalisation",
-    "text": "Formalisation\nLet the table be the (multi)set\n\\[\nP \\subseteq \\mathbb{N} \\times \\{Y,N\\} \\times \\{Y,N\\}, \\qquad (i, f, r) = (\\texttt{product\\_id}, \\texttt{low\\_fats}, \\texttt{recyclable}),\n\\]\nthen the task is to first introduce the selection\n\\[\n\\sigma_{f=Y \\wedge r=Y}(P) = \\{(i,f,r) \\in P \\mid f = Y \\wedge r = Y\\}.\n\\]\nSince we only want the product_id, we take the image of this set under the projection \\(\\pi_i : (i,f,r) \\mapsto i\\):\n\\[\n\\pi_i\\big(\\sigma_{f=Y \\wedge r=Y}(P)\\big) = \\{\\, i \\mid (i, Y, Y) \\in P \\,\\}.\n\\]\nBecause product_id is the primary key, each \\(i\\) appears in exactly one tuple, so \\(P\\) is a genuine set (the graph of a function \\(g : I \\to \\{Y,N\\}^2\\)) and the answer is the preimage \\(g^{-1}(\\{(Y,Y)\\})\\). The projection cannot produce duplicates."
+    "text": "Formalisation\nLet \\(P\\) be the project table and \\(E\\) the employee table, and let \\(f : P \\to I\\) and \\(g : E \\to I\\) read off the employee id. The join is the fibre product (pullback) of \\(P \\xrightarrow{f} I \\xleftarrow{g} E\\):\n\\[\nP \\times_I E = \\{(p, e) \\in P \\times E \\mid f(p) = g(e)\\}.\n\\]\nWritten with ON, SQL keeps every coordinate of both factors, giving 5-tuples \\((\\mathrm{pid}, \\mathrm{eid}, \\mathrm{eid}', \\mathrm{name}, \\mathrm{exp})\\) with \\(\\mathrm{eid} = \\mathrm{eid}'\\). Projecting out the redundant coordinate is a bijection onto the “glued” 4-tuples, which is what JOIN ... USING (employee_id) returns.\nThe fibre product is taken fibre by fibre, \\((P \\times_I E)_i = f^{-1}(i) \\times g^{-1}(i)\\), so its size is\n\\[\n|P \\times_I E| = \\sum_{i \\in I} |f^{-1}(i)|\\,|g^{-1}(i)|.\n\\]\nSince employee_id is the key of Employee, every \\(|g^{-1}(i)| \\le 1\\): the join attaches an employee to each project row and never multiplies rows.\nGrouping by project then partitions the joined set into the classes \\(E_j = \\{(p,e) \\mid p.\\mathrm{pid} = j\\}\\), and the answer is the mean over each class:\n\\[\n\\bar x_j = \\frac{1}{|E_j|} \\sum_{(p,e) \\in E_j} e.\\mathrm{exp}.\n\\]"
   },
   {
-    "objectID": "sql/1757-recyclable-and-low-fat-products.html#solution",
-    "href": "sql/1757-recyclable-and-low-fat-products.html#solution",
-    "title": "Recyclable and Low Fat Products",
+    "objectID": "sql/1075-project-employees-i.html#solution",
+    "href": "sql/1075-project-employees-i.html#solution",
+    "title": "Project Employees I",
     "section": "Solution",
-    "text": "Solution\nSELECT product_id\nFROM Products\nWHERE low_fats = 'Y' AND recyclable = 'Y';"
+    "text": "Solution\nSELECT p.project_id,\n  ROUND(AVG(e.experience_years), 2) AS average_years\nFROM Project p\nJOIN Employee e ON p.employee_id = e.employee_id\nGROUP BY p.project_id;"
   },
   {
-    "objectID": "sql/1757-recyclable-and-low-fat-products.html#pitfalls",
-    "href": "sql/1757-recyclable-and-low-fat-products.html#pitfalls",
-    "title": "Recyclable and Low Fat Products",
+    "objectID": "sql/1075-project-employees-i.html#pitfalls",
+    "href": "sql/1075-project-employees-i.html#pitfalls",
+    "title": "Project Employees I",
     "section": "Pitfalls",
-    "text": "Pitfalls\n\n''Y'' is not 'Y'. Two single quotes inside a string are an escaped literal quote.\nIF() returns a value; it does not filter. IF(cond, a, b) produces a column for every row. Keeping only some rows is the job of WHERE.\nCombine conditions with AND, not a comma. A comma in the SELECT list separates columns.\nThe values are strings. The columns are ENUM('Y','N'), so test = 'Y'; they are not booleans."
+    "text": "Pitfalls\n\nON keeps both id columns; USING merges them. SELECT * on an ON join shows employee_id twice. Harmless for an inner join, but after a LEFT JOIN the two columns differ (one can be NULL), so choose which one to select.\nCheck the key before trusting an aggregate. The row-count formula above is why this AVG is correct: each project row matches at most one employee. Join on a non-key column and rows multiply, which silently reweights AVG and inflates SUM.\nAn inner join is enough here. Every employee_id in Project exists in Employee, and projects with no employees never appear in Project, so no rows need to be kept with NULL padding."
+  },
+  {
+    "objectID": "sql/1633-percentage-of-users-attended-a-contest.html",
+    "href": "sql/1633-percentage-of-users-attended-a-contest.html",
+    "title": "Percentage of Users Attended a Contest",
+    "section": "",
+    "text": "Problem on LeetCode"
+  },
+  {
+    "objectID": "sql/1633-percentage-of-users-attended-a-contest.html#problem",
+    "href": "sql/1633-percentage-of-users-attended-a-contest.html#problem",
+    "title": "Percentage of Users Attended a Contest",
+    "section": "Problem",
+    "text": "Problem\nUsers lists every user; Register records which user registered for which contest (contest_id, user_id). For each contest, report the percentage of all users who registered for it, rounded to two decimal places. Order by percentage (highest first), breaking ties by contest_id (lowest first)."
+  },
+  {
+    "objectID": "sql/1633-percentage-of-users-attended-a-contest.html#formalisation",
+    "href": "sql/1633-percentage-of-users-attended-a-contest.html#formalisation",
+    "title": "Percentage of Users Attended a Contest",
+    "section": "Formalisation",
+    "text": "Formalisation\nLet \\(U\\) be the set of users and \\(R\\) the set of registrations. Grouping by contest partitions \\(R\\) into the classes\n\\[\nR_c = \\{\\, r \\in R \\mid r.\\mathrm{contest} = c \\,\\},\n\\]\nand the quantity we want is\n\\[\np(c) = 100 \\cdot \\frac{|R_c|}{|U|}.\n\\]\nThe numerator depends on the group; the denominator does not. \\(|U|\\) is one constant for the whole query, so it comes from a separate scalar subquery. Summing over the groups would give the wrong quantity:\n\\[\n\\sum_c |R_c| = |R| \\neq |U|,\n\\]\nwhich counts user–contest registrations, not users.\nThe output is then the sequence of pairs \\((c, p(c))\\) sorted lexicographically by the key \\((-p(c),\\ c)\\): percentage descending, contest id ascending."
+  },
+  {
+    "objectID": "sql/1633-percentage-of-users-attended-a-contest.html#solution",
+    "href": "sql/1633-percentage-of-users-attended-a-contest.html#solution",
+    "title": "Percentage of Users Attended a Contest",
+    "section": "Solution",
+    "text": "Solution\nSELECT r.contest_id,\n       ROUND(100 * COUNT(r.user_id) / (SELECT COUNT(*) FROM Users), 2)\n         AS percentage\nFROM Register r\nGROUP BY r.contest_id\nORDER BY percentage DESC, r.contest_id ASC;\nMy working version kept a left join from Users and filtered it:\nSELECT r.contest_id,\n       ROUND(100 * COUNT(r.contest_id) / (SELECT COUNT(*) FROM Users), 2)\n         AS percentage\nFROM Users u\nLEFT JOIN Register r ON u.user_id = r.user_id\nWHERE r.contest_id IS NOT NULL\nGROUP BY r.contest_id\nORDER BY percentage DESC, r.contest_id ASC;\nIt gives the same answer, but the WHERE removes exactly the rows the left join added, leaving an inner join. Since every registration belongs to an existing user, that is just Register, so the join can go."
+  },
+  {
+    "objectID": "sql/1633-percentage-of-users-attended-a-contest.html#pitfalls",
+    "href": "sql/1633-percentage-of-users-attended-a-contest.html#pitfalls",
+    "title": "Percentage of Users Attended a Contest",
+    "section": "Pitfalls",
+    "text": "Pitfalls\n\nAggregates cannot be nested. SUM(COUNT(...)) is rejected in a grouped query. A constant that is the same for every group belongs in a scalar subquery: (SELECT COUNT(*) FROM Users).\nA left join from Users creates a NULL group. Users who registered for nothing get a row with contest_id NULL, which GROUP BY turns into a spurious “NULL contest”.\nClauses have a fixed written order: SELECT → FROM → JOIN → WHERE → GROUP BY → HAVING → ORDER BY. I first wrote WHERE before FROM.\n!= 'NULL' only works by accident. MySQL casts the string 'NULL' to 0, so the test becomes contest_id != 0, and NULL != 0 is UNKNOWN, which WHERE drops. The correct test is IS NOT NULL.\nA WHERE condition on the right-hand table cancels a LEFT JOIN. The same rule as in 1251, here used on purpose, which is the sign the join is unnecessary.\nCOUNT(*) counts rows; COUNT(col) counts non-NULL values. After a left join they differ on the padded rows.\nORDER BY can use the SELECT alias (ORDER BY percentage), because ORDER BY runs after SELECT."
   },
   {
     "objectID": "index.html",
@@ -207,7 +242,7 @@
     "href": "sql.html",
     "title": "SQL, Walked Through",
     "section": "",
-    "text": "Each page follows the same pattern: the problem in my own words, a formalisation in relational algebra (tables as multisets of tuples, WHERE as selection, SELECT as projection, joins as filtered Cartesian products), the SQL, and the pitfalls I hit along the way. Use the categories to find every problem that uses a given pattern.\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\n#\n\n\n\nTitle\n\n\n\nSource\n\n\n\nLevel\n\n\n\nCategories\n\n\n\n\n\n\n\n\n197\n\n\nRising Temperature\n\n\nLeetCode\n\n\nEasy\n\n\nself-join, dates, window functions\n\n\n\n\n\n\n620\n\n\nNot Boring Movies\n\n\nLeetCode\n\n\nEasy\n\n\nselection, ordering, NULL\n\n\n\n\n\n\n1068\n\n\nProduct Sales Analysis I\n\n\nLeetCode\n\n\nEasy\n\n\ninner join, CTE\n\n\n\n\n\n\n1075\n\n\nProject Employees I\n\n\nLeetCode\n\n\nEasy\n\n\ninner join, aggregation\n\n\n\n\n\n\n1251\n\n\nAverage Selling Price\n\n\nLeetCode\n\n\nEasy\n\n\nleft join, range join, aggregation, NULL\n\n\n\n\n\n\n1378\n\n\nReplace Employee ID With The Unique Identifier\n\n\nLeetCode\n\n\nEasy\n\n\nleft join, NULL\n\n\n\n\n\n\n1581\n\n\nCustomer Who Visited but Did Not Make Any Transactions\n\n\nLeetCode\n\n\nEasy\n\n\nanti-join, left join, aggregation, NULL\n\n\n\n\n\n\n1757\n\n\nRecyclable and Low Fat Products\n\n\nLeetCode\n\n\nEasy\n\n\nselection, projection\n\n\n\n\n\n\n1934\n\n\nConfirmation Rate\n\n\nLeetCode\n\n\nMedium\n\n\nleft join, conditional aggregation\n\n\n\n\n\n\nNo matching items"
+    "text": "Each page follows the same pattern: the problem in my own words, a formalisation in relational algebra (tables as multisets of tuples, WHERE as selection, SELECT as projection, joins as filtered Cartesian products), the SQL, and the pitfalls I hit along the way. Use the categories to find every problem that uses a given pattern.\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\n#\n\n\n\nTitle\n\n\n\nSource\n\n\n\nLevel\n\n\n\nCategories\n\n\n\n\n\n\n\n\n197\n\n\nRising Temperature\n\n\nLeetCode\n\n\nEasy\n\n\nself-join, dates, window functions\n\n\n\n\n\n\n610\n\n\nTriangle Judgement\n\n\nLeetCode\n\n\nEasy\n\n\nCASE, computed column\n\n\n\n\n\n\n620\n\n\nNot Boring Movies\n\n\nLeetCode\n\n\nEasy\n\n\nselection, ordering, NULL\n\n\n\n\n\n\n1068\n\n\nProduct Sales Analysis I\n\n\nLeetCode\n\n\nEasy\n\n\ninner join, CTE\n\n\n\n\n\n\n1075\n\n\nProject Employees I\n\n\nLeetCode\n\n\nEasy\n\n\ninner join, aggregation\n\n\n\n\n\n\n1251\n\n\nAverage Selling Price\n\n\nLeetCode\n\n\nEasy\n\n\nleft join, range join, aggregation, NULL\n\n\n\n\n\n\n1378\n\n\nReplace Employee ID With The Unique Identifier\n\n\nLeetCode\n\n\nEasy\n\n\nleft join, NULL\n\n\n\n\n\n\n1581\n\n\nCustomer Who Visited but Did Not Make Any Transactions\n\n\nLeetCode\n\n\nEasy\n\n\nanti-join, left join, aggregation, NULL\n\n\n\n\n\n\n1633\n\n\nPercentage of Users Attended a Contest\n\n\nLeetCode\n\n\nEasy\n\n\naggregation, subquery, ordering, left join, NULL\n\n\n\n\n\n\n1757\n\n\nRecyclable and Low Fat Products\n\n\nLeetCode\n\n\nEasy\n\n\nselection, projection\n\n\n\n\n\n\n1934\n\n\nConfirmation Rate\n\n\nLeetCode\n\n\nMedium\n\n\nleft join, conditional aggregation\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/curvature-as-a-commutator/index.html",
@@ -252,39 +287,74 @@
     "text": "Hi, I’m Dylan. I’m a theoretical physics graduate from the University of Cambridge. This is my space to write freely about anything that has been lingering in my mind. I will mainly be writing about aspects of theoretical and mathematical physics that I enjoy and believe deserve more attention.\nI will try to keep the explanations accessible and build up any required mathematics from undergraduate-level arguments. This does not mean that you need to be a mathematician to enjoy these articles. Geometric and visual arguments will also be employed liberally because of their beauty and physical intuition.\nAnyway, I hope you can learn some cool physics and maths from this page! Please note that any views expressed here are my own."
   },
   {
-    "objectID": "sql/1075-project-employees-i.html",
-    "href": "sql/1075-project-employees-i.html",
-    "title": "Project Employees I",
+    "objectID": "sql/1757-recyclable-and-low-fat-products.html",
+    "href": "sql/1757-recyclable-and-low-fat-products.html",
+    "title": "Recyclable and Low Fat Products",
     "section": "",
     "text": "Problem on LeetCode"
   },
   {
-    "objectID": "sql/1075-project-employees-i.html#problem",
-    "href": "sql/1075-project-employees-i.html#problem",
-    "title": "Project Employees I",
+    "objectID": "sql/1757-recyclable-and-low-fat-products.html#problem",
+    "href": "sql/1757-recyclable-and-low-fat-products.html#problem",
+    "title": "Recyclable and Low Fat Products",
     "section": "Problem",
-    "text": "Problem\nProject records which employees work on which project (project_id, employee_id); Employee gives each employee’s name and experience_years. For each project, report the average experience of its employees, rounded to two decimal places."
+    "text": "Problem\nA Products table records, for each product_id, whether the product is low fat and whether it is recyclable (each 'Y' or 'N'). Return the ids of products that are both."
   },
   {
-    "objectID": "sql/1075-project-employees-i.html#formalisation",
-    "href": "sql/1075-project-employees-i.html#formalisation",
-    "title": "Project Employees I",
+    "objectID": "sql/1757-recyclable-and-low-fat-products.html#formalisation",
+    "href": "sql/1757-recyclable-and-low-fat-products.html#formalisation",
+    "title": "Recyclable and Low Fat Products",
     "section": "Formalisation",
-    "text": "Formalisation\nLet \\(P\\) be the project table and \\(E\\) the employee table, and let \\(f : P \\to I\\) and \\(g : E \\to I\\) read off the employee id. The join is the fibre product (pullback) of \\(P \\xrightarrow{f} I \\xleftarrow{g} E\\):\n\\[\nP \\times_I E = \\{(p, e) \\in P \\times E \\mid f(p) = g(e)\\}.\n\\]\nWritten with ON, SQL keeps every coordinate of both factors, giving 5-tuples \\((\\mathrm{pid}, \\mathrm{eid}, \\mathrm{eid}', \\mathrm{name}, \\mathrm{exp})\\) with \\(\\mathrm{eid} = \\mathrm{eid}'\\). Projecting out the redundant coordinate is a bijection onto the “glued” 4-tuples, which is what JOIN ... USING (employee_id) returns.\nThe fibre product is taken fibre by fibre, \\((P \\times_I E)_i = f^{-1}(i) \\times g^{-1}(i)\\), so its size is\n\\[\n|P \\times_I E| = \\sum_{i \\in I} |f^{-1}(i)|\\,|g^{-1}(i)|.\n\\]\nSince employee_id is the key of Employee, every \\(|g^{-1}(i)| \\le 1\\): the join attaches an employee to each project row and never multiplies rows.\nGrouping by project then partitions the joined set into the classes \\(E_j = \\{(p,e) \\mid p.\\mathrm{pid} = j\\}\\), and the answer is the mean over each class:\n\\[\n\\bar x_j = \\frac{1}{|E_j|} \\sum_{(p,e) \\in E_j} e.\\mathrm{exp}.\n\\]"
+    "text": "Formalisation\nLet the table be the (multi)set\n\\[\nP \\subseteq \\mathbb{N} \\times \\{Y,N\\} \\times \\{Y,N\\}, \\qquad (i, f, r) = (\\texttt{product\\_id}, \\texttt{low\\_fats}, \\texttt{recyclable}),\n\\]\nthen the task is to first introduce the selection\n\\[\n\\sigma_{f=Y \\wedge r=Y}(P) = \\{(i,f,r) \\in P \\mid f = Y \\wedge r = Y\\}.\n\\]\nSince we only want the product_id, we take the image of this set under the projection \\(\\pi_i : (i,f,r) \\mapsto i\\):\n\\[\n\\pi_i\\big(\\sigma_{f=Y \\wedge r=Y}(P)\\big) = \\{\\, i \\mid (i, Y, Y) \\in P \\,\\}.\n\\]\nBecause product_id is the primary key, each \\(i\\) appears in exactly one tuple, so \\(P\\) is a genuine set (the graph of a function \\(g : I \\to \\{Y,N\\}^2\\)) and the answer is the preimage \\(g^{-1}(\\{(Y,Y)\\})\\). The projection cannot produce duplicates."
   },
   {
-    "objectID": "sql/1075-project-employees-i.html#solution",
-    "href": "sql/1075-project-employees-i.html#solution",
-    "title": "Project Employees I",
+    "objectID": "sql/1757-recyclable-and-low-fat-products.html#solution",
+    "href": "sql/1757-recyclable-and-low-fat-products.html#solution",
+    "title": "Recyclable and Low Fat Products",
     "section": "Solution",
-    "text": "Solution\nSELECT p.project_id,\n  ROUND(AVG(e.experience_years), 2) AS average_years\nFROM Project p\nJOIN Employee e ON p.employee_id = e.employee_id\nGROUP BY p.project_id;"
+    "text": "Solution\nSELECT product_id\nFROM Products\nWHERE low_fats = 'Y' AND recyclable = 'Y';"
   },
   {
-    "objectID": "sql/1075-project-employees-i.html#pitfalls",
-    "href": "sql/1075-project-employees-i.html#pitfalls",
-    "title": "Project Employees I",
+    "objectID": "sql/1757-recyclable-and-low-fat-products.html#pitfalls",
+    "href": "sql/1757-recyclable-and-low-fat-products.html#pitfalls",
+    "title": "Recyclable and Low Fat Products",
     "section": "Pitfalls",
-    "text": "Pitfalls\n\nON keeps both id columns; USING merges them. SELECT * on an ON join shows employee_id twice. Harmless for an inner join, but after a LEFT JOIN the two columns differ (one can be NULL), so choose which one to select.\nCheck the key before trusting an aggregate. The row-count formula above is why this AVG is correct: each project row matches at most one employee. Join on a non-key column and rows multiply, which silently reweights AVG and inflates SUM.\nAn inner join is enough here. Every employee_id in Project exists in Employee, and projects with no employees never appear in Project, so no rows need to be kept with NULL padding."
+    "text": "Pitfalls\n\n''Y'' is not 'Y'. Two single quotes inside a string are an escaped literal quote.\nIF() returns a value; it does not filter. IF(cond, a, b) produces a column for every row. Keeping only some rows is the job of WHERE.\nCombine conditions with AND, not a comma. A comma in the SELECT list separates columns.\nThe values are strings. The columns are ENUM('Y','N'), so test = 'Y'; they are not booleans."
+  },
+  {
+    "objectID": "sql/1068-product-sales-analysis-i.html",
+    "href": "sql/1068-product-sales-analysis-i.html",
+    "title": "Product Sales Analysis I",
+    "section": "",
+    "text": "Problem on LeetCode"
+  },
+  {
+    "objectID": "sql/1068-product-sales-analysis-i.html#problem",
+    "href": "sql/1068-product-sales-analysis-i.html#problem",
+    "title": "Product Sales Analysis I",
+    "section": "Problem",
+    "text": "Problem\nSales records each sale (sale_id, product_id, year, quantity, price); Product maps product_id to product_name. For every sale, report the product name, year and price."
+  },
+  {
+    "objectID": "sql/1068-product-sales-analysis-i.html#formalisation",
+    "href": "sql/1068-product-sales-analysis-i.html#formalisation",
+    "title": "Product Sales Analysis I",
+    "section": "Formalisation",
+    "text": "Formalisation\nWith \\(S\\) for Sales and \\(P\\) for Product, pair each sale with its product and project:\n\\[\n\\pi_{\\,p.\\mathrm{name},\\ s.\\mathrm{year},\\ s.\\mathrm{price}}\\Big(\\{(s,p) \\in S \\times P \\mid s.\\mathrm{product\\_id} = p.\\mathrm{product\\_id}\\}\\Big).\n\\]\nSince product_id is the key of Product, each sale matches exactly one product, so there is one output row per sale."
+  },
+  {
+    "objectID": "sql/1068-product-sales-analysis-i.html#solution",
+    "href": "sql/1068-product-sales-analysis-i.html#solution",
+    "title": "Product Sales Analysis I",
+    "section": "Solution",
+    "text": "Solution\nSELECT p.product_name, s.year, s.price\nFROM Sales s\nJOIN Product p ON p.product_id = s.product_id;\nIf you do want a named intermediate result, the syntax is a common table expression, written before the query that uses it:\nWITH Output AS (\n    SELECT p.product_name, s.year, s.price\n    FROM Sales s\n    JOIN Product p ON p.product_id = s.product_id\n)\nSELECT product_name, year, price FROM Output;"
+  },
+  {
+    "objectID": "sql/1068-product-sales-analysis-i.html#pitfalls",
+    "href": "sql/1068-product-sales-analysis-i.html#pitfalls",
+    "title": "Product Sales Analysis I",
+    "section": "Pitfalls",
+    "text": "Pitfalls\n\nAS name after a query is not valid. A query is named with WITH name AS (...), or as a subquery FROM (SELECT ...) AS name.\nSELECT * inside a CTE can fail. Both tables have a product_id column, so the CTE would have two columns with the same name (“Duplicate column name”).\nTwo statements need a ; between them.\nSQL is not executed in the order it is written. The logical order is FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY, which is why aliases defined in FROM can be used in SELECT."
   },
   {
     "objectID": "sql/1378-replace-employee-id-with-the-unique-identifier.html",
