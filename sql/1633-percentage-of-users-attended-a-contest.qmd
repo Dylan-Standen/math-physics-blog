@@ -1,0 +1,75 @@
+---
+title: "Percentage of Users Attended a Contest"
+description: "A per-group count over a global constant: why the denominator is a scalar subquery, not a nested aggregate."
+problem: 1633
+source: LeetCode
+difficulty: Easy
+date: "2026-11-25"
+categories: [aggregation, subquery, ordering, left join, "NULL"]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/percentage-of-users-attended-a-contest/)
+
+## Problem
+
+`Users` lists every user; `Register` records which user registered for which contest (`contest_id`, `user_id`). For each contest, report the percentage of all users who registered for it, rounded to two decimal places. Order by percentage (highest first), breaking ties by `contest_id` (lowest first).
+
+## Formalisation
+
+Let $U$ be the set of users and $R$ the set of registrations. Grouping by contest partitions $R$ into the classes
+
+$$
+R_c = \{\, r \in R \mid r.\mathrm{contest} = c \,\},
+$$
+
+and the quantity we want is
+
+$$
+p(c) = 100 \cdot \frac{|R_c|}{|U|}.
+$$
+
+The numerator depends on the group; the denominator does not. $|U|$ is one constant for the whole query, so it comes from a separate scalar subquery. Summing over the groups would give the wrong quantity:
+
+$$
+\sum_c |R_c| = |R| \neq |U|,
+$$
+
+which counts user–contest registrations, not users.
+
+The output is then the sequence of pairs $(c, p(c))$ sorted lexicographically by the key $(-p(c),\ c)$: percentage descending, contest id ascending.
+
+## Solution
+
+```sql
+SELECT r.contest_id,
+       ROUND(100 * COUNT(r.user_id) / (SELECT COUNT(*) FROM Users), 2)
+         AS percentage
+FROM Register r
+GROUP BY r.contest_id
+ORDER BY percentage DESC, r.contest_id ASC;
+```
+
+My working version kept a left join from `Users` and filtered it:
+
+```sql
+SELECT r.contest_id,
+       ROUND(100 * COUNT(r.contest_id) / (SELECT COUNT(*) FROM Users), 2)
+         AS percentage
+FROM Users u
+LEFT JOIN Register r ON u.user_id = r.user_id
+WHERE r.contest_id IS NOT NULL
+GROUP BY r.contest_id
+ORDER BY percentage DESC, r.contest_id ASC;
+```
+
+It gives the same answer, but the `WHERE` removes exactly the rows the left join added, leaving an inner join. Since every registration belongs to an existing user, that is just `Register`, so the join can go.
+
+## Pitfalls
+
+- **Aggregates cannot be nested.** `SUM(COUNT(...))` is rejected in a grouped query. A constant that is the same for every group belongs in a scalar subquery: `(SELECT COUNT(*) FROM Users)`.
+- **A left join from `Users` creates a NULL group.** Users who registered for nothing get a row with `contest_id` NULL, which `GROUP BY` turns into a spurious "NULL contest".
+- **Clauses have a fixed written order:** `SELECT` → `FROM` → `JOIN` → `WHERE` → `GROUP BY` → `HAVING` → `ORDER BY`. I first wrote `WHERE` before `FROM`.
+- **`!= 'NULL'` only works by accident.** MySQL casts the string `'NULL'` to 0, so the test becomes `contest_id != 0`, and `NULL != 0` is UNKNOWN, which `WHERE` drops. The correct test is `IS NOT NULL`.
+- **A `WHERE` condition on the right-hand table cancels a `LEFT JOIN`.** The same rule as in 1251, here used on purpose, which is the sign the join is unnecessary.
+- **`COUNT(*)` counts rows; `COUNT(col)` counts non-NULL values.** After a left join they differ on the padded rows.
+- **`ORDER BY` can use the `SELECT` alias** (`ORDER BY percentage`), because `ORDER BY` runs after `SELECT`.
