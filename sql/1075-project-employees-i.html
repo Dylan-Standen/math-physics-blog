@@ -282,7 +282,7 @@ P \times_I E = \{(p, e) \in P \times E \mid f(p) = g(e)\}.
 <h2 class="anchored" data-anchor-id="pitfalls">Pitfalls</h2>
 <ul>
 <li><strong><code>ON</code> keeps both id columns; <code>USING</code> merges them.</strong> <code>SELECT *</code> on an <code>ON</code> join shows <code>employee_id</code> twice. Harmless for an inner join, but after a <code>LEFT JOIN</code> the two columns differ (one can be NULL), so choose which one to select.</li>
-<li><strong>Check the key before trusting an aggregate.</strong> The row-count formula above is why this <code>AVG</code> is correct: each project row matches at most one employee. Join on a non-key column and rows multiply, which silently reweights <code>AVG</code> and inflates <code>SUM</code>.</li>
+<li><strong>Check the key before trusting an aggregate.</strong> The row-count formula above is why this <code>AVG</code> is correct: each project row matches at most one employee. Join on a non-key column and rows multiply, which reweights <code>AVG</code> and inflates <code>SUM</code> without any error.</li>
 <li><strong>An inner join is enough here.</strong> Every <code>employee_id</code> in <code>Project</code> exists in <code>Employee</code>, and projects with no employees never appear in <code>Project</code>, so no rows need to be kept with NULL padding.</li>
 </ul>
 

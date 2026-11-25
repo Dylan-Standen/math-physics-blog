@@ -284,7 +284,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="pitfalls">Pitfalls</h2>
 <ul>
 <li><strong><code>date - 1</code> is not date arithmetic in MySQL.</strong> It converts <code>'2024-03-01'</code> to the number 20240301 and subtracts 1, which breaks at every month boundary. Use <code>DATE_SUB(d, INTERVAL 1 DAY)</code> or <code>DATEDIFF(a, b)</code>.</li>
-<li><strong><code>LAG</code> gives the previous <em>row</em>, not the previous <em>day</em>.</strong> If a date is missing, <code>LAG</code> silently compares with an older day. That is the trap in this problem.</li>
+<li><strong><code>LAG</code> gives the previous <em>row</em>, not the previous <em>day</em>.</strong> If a date is missing, <code>LAG</code> compares with an older day instead. That is the trap in this problem.</li>
 </ul>
 
 

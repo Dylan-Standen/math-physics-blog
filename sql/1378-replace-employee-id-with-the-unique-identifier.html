@@ -274,7 +274,7 @@ E \mathbin{\bowtie^{\mathrm{L}}_\theta} U = \sigma_\theta(E \times U) \;\cup\; \
 <section id="pitfalls" class="level2">
 <h2 class="anchored" data-anchor-id="pitfalls">Pitfalls</h2>
 <ul>
-<li><strong>“Show NULL if missing” means <code>LEFT JOIN</code>.</strong> A plain <code>JOIN</code> silently drops employees without a unique id.</li>
+<li><strong>“Show NULL if missing” means <code>LEFT JOIN</code>.</strong> A plain <code>JOIN</code> drops employees without a unique id.</li>
 <li><strong><code>ON</code> pairs rows; it does not remove left-hand rows.</strong> To drop rows you need a <code>WHERE</code>, e.g.&nbsp;<code>WHERE u.id IS NULL</code> keeps <em>only</em> the unmatched employees (the anti-join, see 1581).</li>
 <li><strong>Aliases are bound variables.</strong> <code>e</code> and <code>u</code> range over the rows of each table; the letters are arbitrary, but once a table is aliased you must use the alias.</li>
 </ul>
