@@ -389,6 +389,6 @@
     "href": "sql/0620-not-boring-movies.html#pitfalls",
     "title": "Not Boring Movies",
     "section": "Pitfalls",
-    "text": "Pitfalls\n\nOrder by the column the question asks for. My first version used ORDER BY c.id DESC, which passes the example only by coincidence: there, ids 5 and 1 have ratings 9.1 and 8.9, so both orderings agree.\n!= 0 is safer than = 1 for odd numbers. In MySQL, -3 % 2 = -1, so id % 2 = 1 would miss negative odd ids. Ids here are positive, but the habit is worth keeping. MOD(id, 2) behaves the same way.\n!= silently drops NULLs. If a description were NULL, description != 'boring' would be UNKNOWN and WHERE would discard the row, even though a missing description is not “boring”. To keep such rows, write (description != 'boring' OR description IS NULL).\n!= and &lt;&gt; are the same. &lt;&gt; is the SQL standard; both work in MySQL."
+    "text": "Pitfalls\n\nOrder by the column the question asks for. My first version used ORDER BY c.id DESC, which passes the example only by coincidence: there, ids 5 and 1 have ratings 9.1 and 8.9, so both orderings agree.\n!= 0 is safer than = 1 for odd numbers. In MySQL, -3 % 2 = -1, so id % 2 = 1 would miss negative odd ids. Ids here are positive, but the habit is worth keeping. MOD(id, 2) behaves the same way.\n!= drops NULLs. If a description were NULL, description != 'boring' would be UNKNOWN and WHERE would discard the row, even though a missing description is not “boring”. To keep such rows, write (description != 'boring' OR description IS NULL)."
   }
 ]

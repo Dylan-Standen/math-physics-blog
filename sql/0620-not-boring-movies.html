@@ -275,8 +275,7 @@ window.Quarto = {
 <ul>
 <li><strong>Order by the column the question asks for.</strong> My first version used <code>ORDER BY c.id DESC</code>, which passes the example only by coincidence: there, ids 5 and 1 have ratings 9.1 and 8.9, so both orderings agree.</li>
 <li><strong><code>!= 0</code> is safer than <code>= 1</code> for odd numbers.</strong> In MySQL, <code>-3 % 2 = -1</code>, so <code>id % 2 = 1</code> would miss negative odd ids. Ids here are positive, but the habit is worth keeping. <code>MOD(id, 2)</code> behaves the same way.</li>
-<li><strong><code>!=</code> silently drops NULLs.</strong> If a description were NULL, <code>description != 'boring'</code> would be UNKNOWN and <code>WHERE</code> would discard the row, even though a missing description is not “boring”. To keep such rows, write <code>(description != 'boring' OR description IS NULL)</code>.</li>
-<li><strong><code>!=</code> and <code>&lt;&gt;</code> are the same.</strong> <code>&lt;&gt;</code> is the SQL standard; both work in MySQL.</li>
+<li><strong><code>!=</code> drops NULLs.</strong> If a description were NULL, <code>description != 'boring'</code> would be UNKNOWN and <code>WHERE</code> would discard the row, even though a missing description is not “boring”. To keep such rows, write <code>(description != 'boring' OR description IS NULL)</code>.</li>
 </ul>
 
 
