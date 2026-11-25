@@ -1,0 +1,63 @@
+---
+title: "Triangle Judgement"
+description: "A computed column via CASE, and why the triangle inequality reduces to a single test on the longest side."
+problem: 610
+source: LeetCode
+difficulty: Easy
+date: "2026-11-25"
+categories: [CASE, computed column]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/triangle-judgement/)
+
+## Problem
+
+Each row of `Triangle` holds three positive lengths `x`, `y`, `z`. For every row, report whether the three segments can form a triangle (`'Yes'` or `'No'`).
+
+## Formalisation
+
+This is not a selection: every row is kept. Instead each tuple is extended by a computed value, a generalised projection
+
+$$
+\pi_{\,x,\,y,\,z,\,\chi(x,y,z)}(T), \qquad
+\chi(x,y,z) =
+\begin{cases}
+\text{Yes}, & x + y > z \ \wedge\ x + z > y \ \wedge\ y + z > x, \\
+\text{No}, & \text{otherwise.}
+\end{cases}
+$$
+
+The three inequalities collapse to one. Without loss of generality let $z = \max(x,y,z)$. Then $x + z > z \ge y$ and $y + z > z \ge x$ (all lengths are positive), so the second and third inequalities hold automatically and only $x + y > z$ can fail. Hence
+
+$$
+\chi(x,y,z) = \text{Yes} \iff x + y + z > 2\max(x,y,z).
+$$
+
+This also explains my first attempt: testing only $x + y > z$ is correct exactly when $z$ happens to be the longest side.
+
+## Solution
+
+```sql
+SELECT x, y, z,
+  CASE
+    WHEN x + y > z AND x + z > y AND y + z > x THEN 'Yes'
+    ELSE 'No'
+  END AS triangle
+FROM Triangle;
+```
+
+The single-test version from the formalisation:
+
+```sql
+SELECT x, y, z,
+  CASE WHEN x + y + z > 2 * GREATEST(x, y, z) THEN 'Yes' ELSE 'No' END AS triangle
+FROM Triangle;
+```
+
+## Pitfalls
+
+- **Check all three inequalities, not one.** My first version treated `z` as the special side and tested only `x + y <= z`, which passes whenever `z` is the longest side and fails otherwise (8 of 11 tests passed).
+- **The inequality is strict.** If $x + y = z$ the "triangle" is flat (degenerate), so the answer is `'No'`.
+- **`ABS` is unnecessary.** The values are lengths, so they are positive.
+- **`GREATEST` is not `MAX`.** `GREATEST(x, y, z)` takes the largest of several values in one row; `MAX(col)` is an aggregate over many rows.
+- **`CASE` builds a column; `WHERE` removes rows.** Here every row must appear in the output, so the condition goes in a `CASE`, not a `WHERE`.
