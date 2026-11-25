@@ -105,74 +105,46 @@
     "text": "Pitfalls\n\n“Show NULL if missing” means LEFT JOIN. A plain JOIN silently drops employees without a unique id.\nON pairs rows; it does not remove left-hand rows. To drop rows you need a WHERE, e.g. WHERE u.id IS NULL keeps only the unmatched employees (the anti-join, see 1581).\nAliases are bound variables. e and u range over the rows of each table; the letters are arbitrary, but once a table is aliased you must use the alias."
   },
   {
-    "objectID": "sql/1757-recyclable-and-low-fat-products.html",
-    "href": "sql/1757-recyclable-and-low-fat-products.html",
-    "title": "Recyclable and Low Fat Products",
+    "objectID": "sql/1075-project-employees-i.html",
+    "href": "sql/1075-project-employees-i.html",
+    "title": "Project Employees I",
     "section": "",
     "text": "Problem on LeetCode"
   },
   {
-    "objectID": "sql/1757-recyclable-and-low-fat-products.html#problem",
-    "href": "sql/1757-recyclable-and-low-fat-products.html#problem",
-    "title": "Recyclable and Low Fat Products",
+    "objectID": "sql/1075-project-employees-i.html#problem",
+    "href": "sql/1075-project-employees-i.html#problem",
+    "title": "Project Employees I",
     "section": "Problem",
-    "text": "Problem\nA Products table records, for each product_id, whether the product is low fat and whether it is recyclable (each 'Y' or 'N'). Return the ids of products that are both."
+    "text": "Problem\nProject records which employees work on which project (project_id, employee_id); Employee gives each employee’s name and experience_years. For each project, report the average experience of its employees, rounded to two decimal places."
   },
   {
-    "objectID": "sql/1757-recyclable-and-low-fat-products.html#formalisation",
-    "href": "sql/1757-recyclable-and-low-fat-products.html#formalisation",
-    "title": "Recyclable and Low Fat Products",
+    "objectID": "sql/1075-project-employees-i.html#formalisation",
+    "href": "sql/1075-project-employees-i.html#formalisation",
+    "title": "Project Employees I",
     "section": "Formalisation",
-    "text": "Formalisation\nLet the table be the (multi)set\n\\[\nP \\subseteq \\mathbb{N} \\times \\{Y,N\\} \\times \\{Y,N\\}, \\qquad (i, f, r) = (\\texttt{product\\_id}, \\texttt{low\\_fats}, \\texttt{recyclable}),\n\\]\nthen the task is to first introduce the selection\n\\[\n\\sigma_{f=Y \\wedge r=Y}(P) = \\{(i,f,r) \\in P \\mid f = Y \\wedge r = Y\\}.\n\\]\nSince we only want the product_id, we take the image of this set under the projection \\(\\pi_i : (i,f,r) \\mapsto i\\):\n\\[\n\\pi_i\\big(\\sigma_{f=Y \\wedge r=Y}(P)\\big) = \\{\\, i \\mid (i, Y, Y) \\in P \\,\\}.\n\\]\nBecause product_id is the primary key, each \\(i\\) appears in exactly one tuple, so \\(P\\) is a genuine set (the graph of a function \\(g : I \\to \\{Y,N\\}^2\\)) and the answer is the preimage \\(g^{-1}(\\{(Y,Y)\\})\\). The projection cannot produce duplicates."
+    "text": "Formalisation\nLet \\(P\\) be the project table and \\(E\\) the employee table, and let \\(f : P \\to I\\) and \\(g : E \\to I\\) read off the employee id. The join is the fibre product (pullback) of \\(P \\xrightarrow{f} I \\xleftarrow{g} E\\):\n\\[\nP \\times_I E = \\{(p, e) \\in P \\times E \\mid f(p) = g(e)\\}.\n\\]\nWritten with ON, SQL keeps every coordinate of both factors, giving 5-tuples \\((\\mathrm{pid}, \\mathrm{eid}, \\mathrm{eid}', \\mathrm{name}, \\mathrm{exp})\\) with \\(\\mathrm{eid} = \\mathrm{eid}'\\). Projecting out the redundant coordinate is a bijection onto the “glued” 4-tuples, which is what JOIN ... USING (employee_id) returns.\nThe fibre product is taken fibre by fibre, \\((P \\times_I E)_i = f^{-1}(i) \\times g^{-1}(i)\\), so its size is\n\\[\n|P \\times_I E| = \\sum_{i \\in I} |f^{-1}(i)|\\,|g^{-1}(i)|.\n\\]\nSince employee_id is the key of Employee, every \\(|g^{-1}(i)| \\le 1\\): the join attaches an employee to each project row and never multiplies rows.\nGrouping by project then partitions the joined set into the classes \\(E_j = \\{(p,e) \\mid p.\\mathrm{pid} = j\\}\\), and the answer is the mean over each class:\n\\[\n\\bar x_j = \\frac{1}{|E_j|} \\sum_{(p,e) \\in E_j} e.\\mathrm{exp}.\n\\]"
   },
   {
-    "objectID": "sql/1757-recyclable-and-low-fat-products.html#solution",
-    "href": "sql/1757-recyclable-and-low-fat-products.html#solution",
-    "title": "Recyclable and Low Fat Products",
+    "objectID": "sql/1075-project-employees-i.html#solution",
+    "href": "sql/1075-project-employees-i.html#solution",
+    "title": "Project Employees I",
     "section": "Solution",
-    "text": "Solution\nSELECT product_id\nFROM Products\nWHERE low_fats = 'Y' AND recyclable = 'Y';"
+    "text": "Solution\nSELECT p.project_id,\n  ROUND(AVG(e.experience_years), 2) AS average_years\nFROM Project p\nJOIN Employee e ON p.employee_id = e.employee_id\nGROUP BY p.project_id;"
   },
   {
-    "objectID": "sql/1757-recyclable-and-low-fat-products.html#pitfalls",
-    "href": "sql/1757-recyclable-and-low-fat-products.html#pitfalls",
-    "title": "Recyclable and Low Fat Products",
+    "objectID": "sql/1075-project-employees-i.html#pitfalls",
+    "href": "sql/1075-project-employees-i.html#pitfalls",
+    "title": "Project Employees I",
     "section": "Pitfalls",
-    "text": "Pitfalls\n\n''Y'' is not 'Y'. Two single quotes inside a string are an escaped literal quote.\nIF() returns a value; it does not filter. IF(cond, a, b) produces a column for every row. Keeping only some rows is the job of WHERE.\nCombine conditions with AND, not a comma. A comma in the SELECT list separates columns.\nThe values are strings. The columns are ENUM('Y','N'), so test = 'Y'; they are not booleans."
+    "text": "Pitfalls\n\nON keeps both id columns; USING merges them. SELECT * on an ON join shows employee_id twice. Harmless for an inner join, but after a LEFT JOIN the two columns differ (one can be NULL), so choose which one to select.\nCheck the key before trusting an aggregate. The row-count formula above is why this AVG is correct: each project row matches at most one employee. Join on a non-key column and rows multiply, which silently reweights AVG and inflates SUM.\nAn inner join is enough here. Every employee_id in Project exists in Employee, and projects with no employees never appear in Project, so no rows need to be kept with NULL padding."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Notes on Mathematical Physics",
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About Me",
     "section": "",
-    "text": "The Physics of Beer Foam\n\n\n\nMathematical Physics\n\nIntegrability\n\nBeer\n\n\n\nThe Physics and Mathematics of Beer foam. And, it’s relationship to integrable systems.\n\n\n\n\n\nNov 13, 2026\n\n\nDylan Standen\n\n\n\n\n\n\n\n\n\n\n\n\nCurvature, Curvature, Curvature!\n\n\n\nMathematical Physics\n\nGeometry\n\nGauge Theory\n\n\n\nHow the same geometric idea appears in general relativity and gauge theory.\n\n\n\n\n\nAug 20, 2026\n\n\nDylan Standen\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "posts/The-Physics-of-beer/index.html",
-    "href": "posts/The-Physics-of-beer/index.html",
-    "title": "The Physics of Beer Foam",
-    "section": "",
-    "text": "Who doesn’t love a good (ice-cold) beer? I certainly do, and if you have ever wondered if there is a mathematical way to describe the foam from pouring a beer, then you have come to right place. In this post I am going to explore and explain the Physics that make this effect occur and how we can describe it mathematically. Towards the end I will discuss the surprisingly deep overlap with integrable systems - systems which are exactly solvable, by which we mean we can integrate them to attain a solution."
-  },
-  {
-    "objectID": "posts/The-Physics-of-beer/index.html#the-advent-of-beer",
-    "href": "posts/The-Physics-of-beer/index.html#the-advent-of-beer",
-    "title": "The Physics of Beer Foam",
-    "section": "The Advent of Beer",
-    "text": "The Advent of Beer\nBeer is one of the oldest alcoholic beverages. It’s root stretch back to at least 13,000, with the Natufians consuming a beer-like beverage during ritual ceremonies. Obviously since then, peoples across the world have been fermenting grain and hops in order to create the beautiful golden drink we know today.\nEnough about the history of beer and onto maths. I should note that I will not be covering the chemistry/physics of how the foam actually forms, I will instead be focussing on the mathematical laws that govern its behavior."
-  },
-  {
-    "objectID": "posts/The-Physics-of-beer/index.html#foam-drainage-equation",
-    "href": "posts/The-Physics-of-beer/index.html#foam-drainage-equation",
-    "title": "The Physics of Beer Foam",
-    "section": "Foam Drainage Equation",
-    "text": "Foam Drainage Equation\nThe dynamics of how Foam evolves, known as the foam drainage equation (or law) was first formalised in 1996 with the work by Verbist, Weaire & Kraynik."
-  },
-  {
-    "objectID": "sql.html",
-    "href": "sql.html",
-    "title": "SQL, Walked Through",
-    "section": "",
-    "text": "Each page follows the same pattern: the problem in my own words, a formalisation in relational algebra (tables as multisets of tuples, WHERE as selection, SELECT as projection, joins as filtered Cartesian products), the SQL, and the pitfalls I hit along the way. Use the categories to find every problem that uses a given pattern.\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\n#\n\n\n\nTitle\n\n\n\nSource\n\n\n\nLevel\n\n\n\nCategories\n\n\n\n\n\n\n\n\n197\n\n\nRising Temperature\n\n\nLeetCode\n\n\nEasy\n\n\nself-join, dates, window functions\n\n\n\n\n\n\n1068\n\n\nProduct Sales Analysis I\n\n\nLeetCode\n\n\nEasy\n\n\ninner join, CTE\n\n\n\n\n\n\n1251\n\n\nAverage Selling Price\n\n\nLeetCode\n\n\nEasy\n\n\nleft join, range join, aggregation, NULL\n\n\n\n\n\n\n1378\n\n\nReplace Employee ID With The Unique Identifier\n\n\nLeetCode\n\n\nEasy\n\n\nleft join, NULL\n\n\n\n\n\n\n1581\n\n\nCustomer Who Visited but Did Not Make Any Transactions\n\n\nLeetCode\n\n\nEasy\n\n\nanti-join, left join, aggregation, NULL\n\n\n\n\n\n\n1757\n\n\nRecyclable and Low Fat Products\n\n\nLeetCode\n\n\nEasy\n\n\nselection, projection\n\n\n\n\n\n\n1934\n\n\nConfirmation Rate\n\n\nLeetCode\n\n\nMedium\n\n\nleft join, conditional aggregation\n\n\n\n\n\n\nNo matching items"
+    "text": "Hi, I’m Dylan. I’m a theoretical physics graduate from the University of Cambridge. This is my space to write freely about anything that has been lingering in my mind. I will mainly be writing about aspects of theoretical and mathematical physics that I enjoy and believe deserve more attention.\nI will try to keep the explanations accessible and build up any required mathematics from undergraduate-level arguments. This does not mean that you need to be a mathematician to enjoy these articles. Geometric and visual arguments will also be employed liberally because of their beauty and physical intuition.\nAnyway, I hope you can learn some cool physics and maths from this page! Please note that any views expressed here are my own."
   },
   {
     "objectID": "posts/curvature-as-a-commutator/index.html",
@@ -210,11 +182,74 @@
     "text": "Further Reading\nIf you want to go further, here are some sources I like.\n\nM. P. do Carmo, Differential Geometry of Curves and Surfaces. A great place to learn the classical material on curves, surfaces and Gauss-Bonnet properly.\nS. Carroll, Spacetime and Geometry: An Introduction to General Relativity. A very readable introduction to Riemannian geometry and general relativity.\nM. Nakahara, Geometry, Topology and Physics. The standard reference for connections, fibre bundles, characteristic classes and their uses in physics.\nT. Eguchi, P. B. Gilkey and A. J. Hanson, “Gravitation, Gauge Theories and Differential Geometry”, Physics Reports 66 (1980). A classic review of the dictionary between gravity and gauge theory.\nD. Tong, Lectures on Gauge Theory (University of Cambridge). Excellent on instantons, monopoles and the \\(\\theta\\) angle.\nE. Witten, “Search for a Realistic Kaluza-Klein Theory”, Nuclear Physics B 186 (1981).\nP. Candelas, G. T. Horowitz, A. Strominger and E. Witten, “Vacuum Configurations for Superstrings”, Nuclear Physics B 258 (1985)."
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About Me",
+    "objectID": "sql.html",
+    "href": "sql.html",
+    "title": "SQL, Walked Through",
     "section": "",
-    "text": "Hi, I’m Dylan. I’m a theoretical physics graduate from the University of Cambridge. This is my space to write freely about anything that has been lingering in my mind. I will mainly be writing about aspects of theoretical and mathematical physics that I enjoy and believe deserve more attention.\nI will try to keep the explanations accessible and build up any required mathematics from undergraduate-level arguments. This does not mean that you need to be a mathematician to enjoy these articles. Geometric and visual arguments will also be employed liberally because of their beauty and physical intuition.\nAnyway, I hope you can learn some cool physics and maths from this page! Please note that any views expressed here are my own."
+    "text": "Each page follows the same pattern: the problem in my own words, a formalisation in relational algebra (tables as multisets of tuples, WHERE as selection, SELECT as projection, joins as filtered Cartesian products), the SQL, and the pitfalls I hit along the way. Use the categories to find every problem that uses a given pattern.\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\n#\n\n\n\nTitle\n\n\n\nSource\n\n\n\nLevel\n\n\n\nCategories\n\n\n\n\n\n\n\n\n197\n\n\nRising Temperature\n\n\nLeetCode\n\n\nEasy\n\n\nself-join, dates, window functions\n\n\n\n\n\n\n1068\n\n\nProduct Sales Analysis I\n\n\nLeetCode\n\n\nEasy\n\n\ninner join, CTE\n\n\n\n\n\n\n1075\n\n\nProject Employees I\n\n\nLeetCode\n\n\nEasy\n\n\ninner join, aggregation\n\n\n\n\n\n\n1251\n\n\nAverage Selling Price\n\n\nLeetCode\n\n\nEasy\n\n\nleft join, range join, aggregation, NULL\n\n\n\n\n\n\n1378\n\n\nReplace Employee ID With The Unique Identifier\n\n\nLeetCode\n\n\nEasy\n\n\nleft join, NULL\n\n\n\n\n\n\n1581\n\n\nCustomer Who Visited but Did Not Make Any Transactions\n\n\nLeetCode\n\n\nEasy\n\n\nanti-join, left join, aggregation, NULL\n\n\n\n\n\n\n1757\n\n\nRecyclable and Low Fat Products\n\n\nLeetCode\n\n\nEasy\n\n\nselection, projection\n\n\n\n\n\n\n1934\n\n\nConfirmation Rate\n\n\nLeetCode\n\n\nMedium\n\n\nleft join, conditional aggregation\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/The-Physics-of-beer/index.html",
+    "href": "posts/The-Physics-of-beer/index.html",
+    "title": "The Physics of Beer Foam",
+    "section": "",
+    "text": "Who doesn’t love a good (ice-cold) beer? I certainly do, and if you have ever wondered if there is a mathematical way to describe the foam from pouring a beer, then you have come to right place. In this post I am going to explore and explain the Physics that make this effect occur and how we can describe it mathematically. Towards the end I will discuss the surprisingly deep overlap with integrable systems - systems which are exactly solvable, by which we mean we can integrate them to attain a solution."
+  },
+  {
+    "objectID": "posts/The-Physics-of-beer/index.html#the-advent-of-beer",
+    "href": "posts/The-Physics-of-beer/index.html#the-advent-of-beer",
+    "title": "The Physics of Beer Foam",
+    "section": "The Advent of Beer",
+    "text": "The Advent of Beer\nBeer is one of the oldest alcoholic beverages. It’s root stretch back to at least 13,000, with the Natufians consuming a beer-like beverage during ritual ceremonies. Obviously since then, peoples across the world have been fermenting grain and hops in order to create the beautiful golden drink we know today.\nEnough about the history of beer and onto maths. I should note that I will not be covering the chemistry/physics of how the foam actually forms, I will instead be focussing on the mathematical laws that govern its behavior."
+  },
+  {
+    "objectID": "posts/The-Physics-of-beer/index.html#foam-drainage-equation",
+    "href": "posts/The-Physics-of-beer/index.html#foam-drainage-equation",
+    "title": "The Physics of Beer Foam",
+    "section": "Foam Drainage Equation",
+    "text": "Foam Drainage Equation\nThe dynamics of how Foam evolves, known as the foam drainage equation (or law) was first formalised in 1996 with the work by Verbist, Weaire & Kraynik."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Notes on Mathematical Physics",
+    "section": "",
+    "text": "The Physics of Beer Foam\n\n\n\nMathematical Physics\n\nIntegrability\n\nBeer\n\n\n\nThe Physics and Mathematics of Beer foam. And, it’s relationship to integrable systems.\n\n\n\n\n\nNov 13, 2026\n\n\nDylan Standen\n\n\n\n\n\n\n\n\n\n\n\n\nCurvature, Curvature, Curvature!\n\n\n\nMathematical Physics\n\nGeometry\n\nGauge Theory\n\n\n\nHow the same geometric idea appears in general relativity and gauge theory.\n\n\n\n\n\nAug 20, 2026\n\n\nDylan Standen\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "sql/1757-recyclable-and-low-fat-products.html",
+    "href": "sql/1757-recyclable-and-low-fat-products.html",
+    "title": "Recyclable and Low Fat Products",
+    "section": "",
+    "text": "Problem on LeetCode"
+  },
+  {
+    "objectID": "sql/1757-recyclable-and-low-fat-products.html#problem",
+    "href": "sql/1757-recyclable-and-low-fat-products.html#problem",
+    "title": "Recyclable and Low Fat Products",
+    "section": "Problem",
+    "text": "Problem\nA Products table records, for each product_id, whether the product is low fat and whether it is recyclable (each 'Y' or 'N'). Return the ids of products that are both."
+  },
+  {
+    "objectID": "sql/1757-recyclable-and-low-fat-products.html#formalisation",
+    "href": "sql/1757-recyclable-and-low-fat-products.html#formalisation",
+    "title": "Recyclable and Low Fat Products",
+    "section": "Formalisation",
+    "text": "Formalisation\nLet the table be the (multi)set\n\\[\nP \\subseteq \\mathbb{N} \\times \\{Y,N\\} \\times \\{Y,N\\}, \\qquad (i, f, r) = (\\texttt{product\\_id}, \\texttt{low\\_fats}, \\texttt{recyclable}),\n\\]\nthen the task is to first introduce the selection\n\\[\n\\sigma_{f=Y \\wedge r=Y}(P) = \\{(i,f,r) \\in P \\mid f = Y \\wedge r = Y\\}.\n\\]\nSince we only want the product_id, we take the image of this set under the projection \\(\\pi_i : (i,f,r) \\mapsto i\\):\n\\[\n\\pi_i\\big(\\sigma_{f=Y \\wedge r=Y}(P)\\big) = \\{\\, i \\mid (i, Y, Y) \\in P \\,\\}.\n\\]\nBecause product_id is the primary key, each \\(i\\) appears in exactly one tuple, so \\(P\\) is a genuine set (the graph of a function \\(g : I \\to \\{Y,N\\}^2\\)) and the answer is the preimage \\(g^{-1}(\\{(Y,Y)\\})\\). The projection cannot produce duplicates."
+  },
+  {
+    "objectID": "sql/1757-recyclable-and-low-fat-products.html#solution",
+    "href": "sql/1757-recyclable-and-low-fat-products.html#solution",
+    "title": "Recyclable and Low Fat Products",
+    "section": "Solution",
+    "text": "Solution\nSELECT product_id\nFROM Products\nWHERE low_fats = 'Y' AND recyclable = 'Y';"
+  },
+  {
+    "objectID": "sql/1757-recyclable-and-low-fat-products.html#pitfalls",
+    "href": "sql/1757-recyclable-and-low-fat-products.html#pitfalls",
+    "title": "Recyclable and Low Fat Products",
+    "section": "Pitfalls",
+    "text": "Pitfalls\n\n''Y'' is not 'Y'. Two single quotes inside a string are an escaped literal quote.\nIF() returns a value; it does not filter. IF(cond, a, b) produces a column for every row. Keeping only some rows is the job of WHERE.\nCombine conditions with AND, not a comma. A comma in the SELECT list separates columns.\nThe values are strings. The columns are ENUM('Y','N'), so test = 'Y'; they are not booleans."
   },
   {
     "objectID": "sql/1068-product-sales-analysis-i.html",
