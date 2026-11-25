@@ -1,0 +1,45 @@
+---
+title: "Customer Who Visited but Did Not Make Any Transactions"
+description: "The anti-join: left join, then keep only the rows that matched nothing."
+problem: 1581
+source: LeetCode
+difficulty: Easy
+date: "2026-11-25"
+categories: [anti-join, left join, aggregation, "NULL"]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/customer-who-visited-but-did-not-make-any-transactions/)
+
+## Problem
+
+`Visits` records each visit (`visit_id`, `customer_id`); `Transactions` records purchases made during visits (`transaction_id`, `visit_id`, `amount`). For each customer, count the visits in which they bought nothing.
+
+## Formalisation
+
+Let $V$ be the visits and $T$ the transactions, and write $V_c = \{v \in V \mid v.\mathrm{customer} = c\}$. The quantity we want is
+
+$$
+n(c) = \big|\{\, v \in V_c \mid \nexists\, t \in T : t.\mathrm{visit\_id} = v.\mathrm{visit\_id} \,\}\big|,
+$$
+
+reported for every customer with $n(c) > 0$. In SQL the "there is no $t$" condition becomes a left join followed by a test for the null padding.
+
+## Solution
+
+```sql
+SELECT v.customer_id, COUNT(*) AS count_no_trans
+FROM Visits v
+LEFT JOIN Transactions t ON v.visit_id = t.visit_id
+WHERE t.transaction_id IS NULL
+GROUP BY v.customer_id;
+```
+
+## Pitfalls
+
+My first attempt joined the tables the wrong way round and made four further mistakes:
+
+- **The table you want to keep in full goes on the left.** We want visits *without* transactions, so `Visits` is the left table. With `Transactions` on the left, every row already has a visit and the missing ones can never appear.
+- **`= 'NULL'` compares against the four-letter string "NULL".** And `= NULL` is never true either; the test is `IS NULL`.
+- **Filters belong in `WHERE`, not inside the `SELECT` list.**
+- **It is `GROUP BY`, at the end, not `BY`.**
+- **`COUNT(column)` skips NULLs.** After the filter, `amount` is always NULL, so `COUNT(amount)` returns 0 for every customer. `COUNT(*)` counts the rows.

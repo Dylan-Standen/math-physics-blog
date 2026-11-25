@@ -1,0 +1,52 @@
+---
+title: "Recyclable and Low Fat Products"
+description: "Selection then projection: the simplest query, formalised."
+problem: 1757
+source: LeetCode
+difficulty: Easy
+date: "2026-11-24"
+categories: [selection, projection]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/recyclable-and-low-fat-products/)
+
+## Problem
+
+A `Products` table records, for each `product_id`, whether the product is low fat and whether it is recyclable (each `'Y'` or `'N'`). Return the ids of products that are both.
+
+## Formalisation
+
+Let the table be the (multi)set
+
+$$
+P \subseteq \mathbb{N} \times \{Y,N\} \times \{Y,N\}, \qquad (i, f, r) = (\texttt{product\_id}, \texttt{low\_fats}, \texttt{recyclable}),
+$$
+
+then the task is to first introduce the selection
+
+$$
+\sigma_{f=Y \wedge r=Y}(P) = \{(i,f,r) \in P \mid f = Y \wedge r = Y\}.
+$$
+
+Since we only want the `product_id`, we take the image of this set under the projection $\pi_i : (i,f,r) \mapsto i$:
+
+$$
+\pi_i\big(\sigma_{f=Y \wedge r=Y}(P)\big) = \{\, i \mid (i, Y, Y) \in P \,\}.
+$$
+
+Because `product_id` is the primary key, each $i$ appears in exactly one tuple, so $P$ is a genuine set (the graph of a function $g : I \to \{Y,N\}^2$) and the answer is the preimage $g^{-1}(\{(Y,Y)\})$. The projection cannot produce duplicates.
+
+## Solution
+
+```sql
+SELECT product_id
+FROM Products
+WHERE low_fats = 'Y' AND recyclable = 'Y';
+```
+
+## Pitfalls
+
+- **`''Y''` is not `'Y'`.** Two single quotes inside a string are an escaped literal quote.
+- **`IF()` returns a value; it does not filter.** `IF(cond, a, b)` produces a column for every row. Keeping only some rows is the job of `WHERE`.
+- **Combine conditions with `AND`, not a comma.** A comma in the `SELECT` list separates columns.
+- **The values are strings.** The columns are `ENUM('Y','N')`, so test `= 'Y'`; they are not booleans.

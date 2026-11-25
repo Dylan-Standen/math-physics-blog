@@ -1,0 +1,5 @@
+# options applied to every SQL solution page in this folder
+author: "Dylan Standen"
+title-block-banner: true
+toc: true
+code-copy: true

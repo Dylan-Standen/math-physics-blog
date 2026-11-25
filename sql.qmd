@@ -1,0 +1,20 @@
+---
+title: "SQL, Walked Through"
+description: "SQL problems from LeetCode and elsewhere, each formalised in relational algebra, solved, and annotated with the mistakes I actually made."
+listing:
+  contents: sql
+  type: table
+  fields: [problem, title, source, difficulty, categories]
+  field-display-names:
+    problem: "#"
+    source: "Source"
+    difficulty: "Level"
+  sort: "problem"
+  categories: true
+  filter-ui: true
+  sort-ui: true
+page-layout: full
+title-block-banner: true
+---
+
+Each page follows the same pattern: the problem in my own words, a formalisation in relational algebra (tables as multisets of tuples, `WHERE` as selection, `SELECT` as projection, joins as filtered Cartesian products), the SQL, and the pitfalls I hit along the way. Use the categories to find every problem that uses a given pattern.

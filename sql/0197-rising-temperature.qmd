@@ -1,0 +1,54 @@
+---
+title: "Rising Temperature"
+description: "A self-join on dates: compare each day with the day before, not the row before."
+problem: 197
+source: LeetCode
+difficulty: Easy
+date: "2026-11-24"
+categories: [self-join, dates, window functions]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/rising-temperature/)
+
+## Problem
+
+`Weather` records a temperature for each `recordDate` (one row per date, but some dates may be missing). Return the `id` of every day that was warmer than the previous calendar day.
+
+## Formalisation
+
+A self-join pairs the table with itself, so we need two independent variables ranging over the same set $W$:
+
+$$
+\{\, w.\mathrm{id} \mid w, w' \in W,\ w'.\mathrm{date} = w.\mathrm{date} - 1\ \text{day},\ w.\mathrm{temp} > w'.\mathrm{temp} \,\}.
+$$
+
+Days whose previous date is missing have no partner $w'$ and so drop out, which is what we want.
+
+## Solution
+
+```sql
+SELECT today.id
+FROM Weather today
+JOIN Weather yesterday
+  ON yesterday.recordDate = DATE_SUB(today.recordDate, INTERVAL 1 DAY)
+WHERE today.temperature > yesterday.temperature;
+```
+
+A window-function version works too, but only if it checks the gap explicitly:
+
+```sql
+WITH w AS (
+  SELECT id, recordDate, temperature,
+         LAG(recordDate)  OVER (ORDER BY recordDate) AS prev_date,
+         LAG(temperature) OVER (ORDER BY recordDate) AS prev_temp
+  FROM Weather
+)
+SELECT id FROM w
+WHERE DATEDIFF(recordDate, prev_date) = 1
+  AND temperature > prev_temp;
+```
+
+## Pitfalls
+
+- **`date - 1` is not date arithmetic in MySQL.** It converts `'2024-03-01'` to the number 20240301 and subtracts 1, which breaks at every month boundary. Use `DATE_SUB(d, INTERVAL 1 DAY)` or `DATEDIFF(a, b)`.
+- **`LAG` gives the previous *row*, not the previous *day*.** If a date is missing, `LAG` silently compares with an older day. That is the trap in this problem.

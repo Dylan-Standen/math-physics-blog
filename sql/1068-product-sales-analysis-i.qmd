@@ -1,0 +1,51 @@
+---
+title: "Product Sales Analysis I"
+description: "An inner join, and how (not) to name an intermediate table."
+problem: 1068
+source: LeetCode
+difficulty: Easy
+date: "2026-11-24"
+categories: [inner join, CTE]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/product-sales-analysis-i/)
+
+## Problem
+
+`Sales` records each sale (`sale_id`, `product_id`, `year`, `quantity`, `price`); `Product` maps `product_id` to `product_name`. For every sale, report the product name, year and price.
+
+## Formalisation
+
+With $S$ for `Sales` and $P$ for `Product`, pair each sale with its product and project:
+
+$$
+\pi_{\,p.\mathrm{name},\ s.\mathrm{year},\ s.\mathrm{price}}\Big(\{(s,p) \in S \times P \mid s.\mathrm{product\_id} = p.\mathrm{product\_id}\}\Big).
+$$
+
+Since `product_id` is the key of `Product`, each sale matches exactly one product, so there is one output row per sale.
+
+## Solution
+
+```sql
+SELECT p.product_name, s.year, s.price
+FROM Sales s
+JOIN Product p ON p.product_id = s.product_id;
+```
+
+If you do want a named intermediate result, the syntax is a common table expression, written *before* the query that uses it:
+
+```sql
+WITH Output AS (
+    SELECT p.product_name, s.year, s.price
+    FROM Sales s
+    JOIN Product p ON p.product_id = s.product_id
+)
+SELECT product_name, year, price FROM Output;
+```
+
+## Pitfalls
+
+- **`AS name` after a query is not valid.** A query is named with `WITH name AS (...)`, or as a subquery `FROM (SELECT ...) AS name`.
+- **`SELECT *` inside a CTE can fail.** Both tables have a `product_id` column, so the CTE would have two columns with the same name ("Duplicate column name").
+- **Two statements need a `;` between them.**
+- **SQL is not executed in the order it is written.** The logical order is `FROM`/`JOIN` → `WHERE` → `GROUP BY` → `HAVING` → `SELECT` → `ORDER BY`, which is why aliases defined in `FROM` can be used in `SELECT`.

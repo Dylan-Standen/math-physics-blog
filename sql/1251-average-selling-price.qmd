@@ -1,0 +1,47 @@
+---
+title: "Average Selling Price"
+description: "A units-weighted average over a range join, and why the date condition belongs in ON."
+problem: 1251
+source: LeetCode
+difficulty: Easy
+date: "2026-11-25"
+categories: [left join, range join, aggregation, "NULL"]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/average-selling-price/)
+
+## Problem
+
+`Prices` gives each product's price over date ranges (`start_date` to `end_date`); `UnitsSold` records sales (`product_id`, `purchase_date`, `units`). For every product, report the average selling price, weighted by units sold and rounded to two decimal places, or 0 if the product never sold.
+
+## Formalisation
+
+For product $j$, pair each sale $k$ with the price in force on its purchase date, giving pairs $(p_k, u_k)$ of price and units. The answer is the units-weighted mean
+
+$$
+\bar p_j = \frac{\sum_k p_k\, u_k}{\sum_k u_k},
+$$
+
+with $\bar p_j = 0$ when product $j$ has no sales (where both sums are empty). Note that $\bar p_j \neq \frac{1}{n}\sum_k p_k$: averaging the prices would ignore how many units sold at each one.
+
+## Solution
+
+```sql
+SELECT p.product_id,
+       IFNULL(ROUND(SUM(p.price * u.units) / SUM(u.units), 2), 0)
+         AS average_price
+FROM Prices p
+LEFT JOIN UnitsSold u
+  ON p.product_id = u.product_id
+ AND u.purchase_date BETWEEN p.start_date AND p.end_date
+GROUP BY p.product_id;
+```
+
+## Pitfalls
+
+My attempt had the right structure but two bugs:
+
+- **`a <= b <= c` does not mean what it does in maths.** SQL evaluates it as `(a <= b) <= c`: the first comparison returns 1 or 0, which is then compared with a date. Write `b BETWEEN a AND c` (inclusive at both ends) or `a <= b AND b <= c`.
+- **A condition on the right-hand table in `WHERE` turns a `LEFT JOIN` into an inner join.** For a product with no sales, `u.purchase_date` is NULL, every comparison with it is UNKNOWN, and `WHERE` discards the row. Conditions in `ON` decide how rows pair up; conditions in `WHERE` remove rows afterwards.
+- **Join on the date range, not just `product_id`.** Joining on `product_id` alone pairs every sale with every price period and inflates the totals.
+- **No sales means both sums are NULL.** `IFNULL(..., 0)` turns the result into the required 0.

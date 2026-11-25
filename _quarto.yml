@@ -12,6 +12,8 @@ website:
       - text: Home
         href: https://dylanstanden.co.uk
     right:
+      - text: SQL
+        href: sql.qmd
       - text: About
         href: about.qmd
       - icon: github

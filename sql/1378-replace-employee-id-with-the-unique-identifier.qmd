@@ -1,0 +1,45 @@
+---
+title: "Replace Employee ID With The Unique Identifier"
+description: "The left join: keep every row on the left, pad the missing matches with NULL."
+problem: 1378
+source: LeetCode
+difficulty: Easy
+date: "2026-11-24"
+categories: [left join, "NULL"]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/replace-employee-id-with-the-unique-identifier/)
+
+## Problem
+
+`Employees` lists each employee's `id` and `name`; `EmployeeUNI` maps some of those ids to a `unique_id`. Show every employee's name with their `unique_id`, or `NULL` if they don't have one.
+
+## Formalisation
+
+Write $E$ for `Employees` and $U$ for `EmployeeUNI`, and let $\theta(e,u)$ be the condition $e.\mathrm{id} = u.\mathrm{id}$. An inner join is a filtered Cartesian product,
+
+$$
+E \bowtie_\theta U = \sigma_\theta(E \times U) = \{(e,u) \in E \times U \mid \theta(e,u)\},
+$$
+
+and the **left** join, written here $\bowtie^{\mathrm{L}}$, adds back every employee that matched nothing, paired with a row of nulls:
+
+$$
+E \mathbin{\bowtie^{\mathrm{L}}_\theta} U = \sigma_\theta(E \times U) \;\cup\; \{(e, \mathrm{NULL}) \mid e \in E,\ \nexists\, u \in U : \theta(e,u)\}.
+$$
+
+The answer is the projection of this onto $(u.\texttt{unique\_id},\ e.\texttt{name})$.
+
+## Solution
+
+```sql
+SELECT u.unique_id, e.name
+FROM Employees e
+LEFT JOIN EmployeeUNI u ON e.id = u.id;
+```
+
+## Pitfalls
+
+- **"Show NULL if missing" means `LEFT JOIN`.** A plain `JOIN` silently drops employees without a unique id.
+- **`ON` pairs rows; it does not remove left-hand rows.** To drop rows you need a `WHERE`, e.g. `WHERE u.id IS NULL` keeps *only* the unmatched employees (the anti-join, see 1581).
+- **Aliases are bound variables.** `e` and `u` range over the rows of each table; the letters are arbitrary, but once a table is aliased you must use the alias.

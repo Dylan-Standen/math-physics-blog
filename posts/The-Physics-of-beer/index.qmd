@@ -1,0 +1,25 @@
+---
+title: "The Physics of Beer Foam"
+description: "The Physics and Mathematics of Beer foam. And, it's relationship to integrable systems."
+author: "Dylan Standen"
+image: thumbnail/Foam-main.jpg
+date: "2026-11-13"
+categories:
+  - Mathematical Physics
+  - Integrability
+  - Beer
+---
+
+Who doesn't love a good (ice-cold) beer? I certainly do, and if you have ever wondered if there is a mathematical way to describe the foam from pouring a beer, then you have come to right place. In this post I am going to explore and explain the Physics  that make this effect occur and how we can describe it mathematically. Towards the end I will discuss the surprisingly deep overlap with integrable systems - systems which are exactly solvable, by which we mean we can integrate them to attain a solution. 
+
+## The Advent of Beer
+
+Beer is one of the oldest alcoholic beverages. It's root stretch back to at least 13,000, with the Natufians consuming a beer-like beverage during ritual ceremonies. Obviously since then, peoples across the world have been fermenting grain and hops in order to create the beautiful golden drink we know today. 
+
+Enough about the history of beer and onto maths. I should note that I will not be covering the chemistry/physics of how the foam actually forms, I will instead be focussing on the mathematical laws that govern its behavior.  
+
+## Foam Drainage Equation
+
+The dynamics of how Foam evolves, known as the foam drainage equation (or law) was first formalised in 1996 with the work by Verbist, Weaire & Kraynik. 
+
+
