@@ -40,6 +40,6 @@ LEFT JOIN EmployeeUNI u ON e.id = u.id;
 
 ## Pitfalls
 
-- **"Show NULL if missing" means `LEFT JOIN`.** A plain `JOIN` silently drops employees without a unique id.
+- **"Show NULL if missing" means `LEFT JOIN`.** A plain `JOIN` drops employees without a unique id.
 - **`ON` pairs rows; it does not remove left-hand rows.** To drop rows you need a `WHERE`, e.g. `WHERE u.id IS NULL` keeps *only* the unmatched employees (the anti-join, see 1581).
 - **Aliases are bound variables.** `e` and `u` range over the rows of each table; the letters are arbitrary, but once a table is aliased you must use the alias.

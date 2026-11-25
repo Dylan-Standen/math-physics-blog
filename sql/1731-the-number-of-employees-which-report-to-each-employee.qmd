@@ -1,0 +1,71 @@
+---
+title: "The Number of Employees Which Report to Each Employee"
+description: "A self-join written literally as a filtered Cartesian product, then a count and a mean over each manager's reports."
+problem: 1731
+source: LeetCode
+difficulty: Easy
+date: "2026-11-25"
+categories: [self-join, aggregation]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/the-number-of-employees-which-report-to-each-employee/)
+
+## Problem
+
+`Employees` gives each employee's `employee_id`, `name`, `age` and the id of the manager they `reports_to` (NULL for nobody). A manager is anyone with at least one direct report. For each manager, report their id and name, the number of direct reports, and the reports' average age rounded to the nearest integer, ordered by `employee_id`.
+
+## Formalisation
+
+Let $E$ be the table, with tuples $(\mathrm{id}, \mathrm{name}, \mathrm{rep}, \mathrm{age})$. The self-join pairs the table with itself, with $e$ playing the manager and $m$ the report:
+
+$$
+\sigma_{\,e.\mathrm{id} = m.\mathrm{rep}}(E \times E) = \{(e, m) \in E \times E \mid m.\mathrm{rep} = e.\mathrm{id}\}.
+$$
+
+My query writes exactly this: `JOIN` with no `ON` is the Cartesian product $E \times E$, and the `WHERE` is the selection.
+
+Grouping by the manager gives, for each $e$, the fibre of their direct reports
+
+$$
+R(e) = \{\, m \in E \mid m.\mathrm{rep} = e.\mathrm{id} \,\},
+$$
+
+and the output row for $e$ is
+
+$$
+\Big(e.\mathrm{id},\ e.\mathrm{name},\ |R(e)|,\ \Big[\tfrac{1}{|R(e)|} \textstyle\sum_{m \in R(e)} m.\mathrm{age}\Big]\Big),
+$$
+
+where $[\,\cdot\,]$ is rounding to the nearest integer. An inner join keeps only pairs that exist, so employees with $R(e) = \emptyset$ never appear. That is exactly the problem's definition of a manager, with no extra filter needed.
+
+## Solution
+
+```sql
+SELECT e.employee_id, e.name,
+  COUNT(*) AS reports_count,
+  ROUND(SUM(m.age)/COUNT(*)) AS average_age
+FROM Employees e
+JOIN Employees m WHERE e.employee_id = m.reports_to
+GROUP BY e.employee_id
+ORDER BY e.employee_id ASC;
+```
+
+The same query in the conventional form, with the join condition in `ON`, `AVG` for the mean, and aliases named after their roles:
+
+```sql
+SELECT mgr.employee_id, mgr.name,
+  COUNT(*) AS reports_count,
+  ROUND(AVG(rep.age)) AS average_age
+FROM Employees mgr
+JOIN Employees rep ON rep.reports_to = mgr.employee_id
+GROUP BY mgr.employee_id
+ORDER BY mgr.employee_id;
+```
+
+## Pitfalls
+
+- **`JOIN` without `ON` is a cross join in MySQL.** Adding the condition in `WHERE` turns it into the inner join, so the query is correct. Putting the condition in `ON` is clearer, and it is required for a `LEFT JOIN`, where a `WHERE` condition on the right-hand table would cancel the outer join (see 1251).
+- **Name aliases by role.** Here `m` is the *report*, not the manager. `mgr` and `rep` make it impossible to mix them up.
+- **`SUM(age)/COUNT(*)` is `AVG(age)`.** Both give 38.5 for ages 41 and 36, which rounds to 39.
+- **Rounding depends on the type.** The average of integer ages is an exact decimal, and MySQL rounds exact values half away from zero (38.5 → 39). For floating-point values, `ROUND` follows the C library, which on many systems rounds half to even.
+- **Group by the key, not the name.** Selecting `e.name` while grouping only by `e.employee_id` is allowed because the name is determined by the primary key. Grouping by name instead would merge two managers who share a name.

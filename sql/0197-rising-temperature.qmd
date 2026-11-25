@@ -51,4 +51,4 @@ WHERE DATEDIFF(recordDate, prev_date) = 1
 ## Pitfalls
 
 - **`date - 1` is not date arithmetic in MySQL.** It converts `'2024-03-01'` to the number 20240301 and subtracts 1, which breaks at every month boundary. Use `DATE_SUB(d, INTERVAL 1 DAY)` or `DATEDIFF(a, b)`.
-- **`LAG` gives the previous *row*, not the previous *day*.** If a date is missing, `LAG` silently compares with an older day. That is the trap in this problem.
+- **`LAG` gives the previous *row*, not the previous *day*.** If a date is missing, `LAG` compares with an older day instead. That is the trap in this problem.

@@ -51,5 +51,5 @@ GROUP BY p.project_id;
 ## Pitfalls
 
 - **`ON` keeps both id columns; `USING` merges them.** `SELECT *` on an `ON` join shows `employee_id` twice. Harmless for an inner join, but after a `LEFT JOIN` the two columns differ (one can be NULL), so choose which one to select.
-- **Check the key before trusting an aggregate.** The row-count formula above is why this `AVG` is correct: each project row matches at most one employee. Join on a non-key column and rows multiply, which silently reweights `AVG` and inflates `SUM`.
+- **Check the key before trusting an aggregate.** The row-count formula above is why this `AVG` is correct: each project row matches at most one employee. Join on a non-key column and rows multiply, which reweights `AVG` and inflates `SUM` without any error.
 - **An inner join is enough here.** Every `employee_id` in `Project` exists in `Employee`, and projects with no employees never appear in `Project`, so no rows need to be kept with NULL padding.
