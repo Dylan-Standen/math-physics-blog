@@ -1,0 +1,51 @@
+---
+title: "Queries Quality and Percentage"
+description: "Two means over each group: an average ratio, and the average of an indicator as a percentage."
+problem: 1211
+source: LeetCode
+difficulty: Easy
+date: "2026-11-26"
+categories: [aggregation, conditional aggregation]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/queries-quality-and-percentage/)
+
+## Problem
+
+`Queries` records, for each query name, a result with its `position` and a `rating` from 1 to 5. For each query name, report its quality (the average of `rating / position`) and the percentage of its results with a rating below 3, both rounded to two decimal places.
+
+## Formalisation
+
+Group the table by query name, giving for each name $n$ the set of results
+
+$$
+Q_n = \{\, q \in Q \mid q.\mathrm{name} = n \,\}.
+$$
+
+Both columns are means over $Q_n$:
+
+$$
+\mathrm{quality}(n) = \frac{1}{|Q_n|} \sum_{q \in Q_n} \frac{q.\mathrm{rating}}{q.\mathrm{position}},
+\qquad
+\mathrm{poor}(n) = \frac{100}{|Q_n|} \sum_{q \in Q_n} \mathbf{1}[\,q.\mathrm{rating} < 3\,].
+$$
+
+The second is the mean of an indicator function, which is the fraction of poor results, scaled by 100 to make a percentage.
+
+## Solution
+
+```sql
+SELECT q.query_name,
+       ROUND(AVG(q.rating / q.position), 2) AS quality,
+       ROUND(100 * SUM(CASE WHEN q.rating < 3 THEN 1 ELSE 0 END) / COUNT(*), 2)
+         AS poor_query_percentage
+FROM Queries q
+GROUP BY q.query_name;
+```
+
+## Pitfalls
+
+- **Single quotes make text, not a column.** I first wrote `CASE WHEN 'rating' < 3`. MySQL converts the string `'rating'` to the number 0, so the test is `0 < 3`, true for every row, and every query came out as 100% poor. Column names go bare, or in backticks if they clash with a reserved word.
+- **A percentage needs the factor of 100.** `SUM(...)/COUNT(*)` alone is a fraction between 0 and 1.
+- **`SUM(x)/COUNT(*)` is `AVG(x)`.** `AVG` is shorter and says what is meant. The poor percentage can also be written `ROUND(100 * AVG(q.rating < 3), 2)`, since the comparison evaluates to 1 or 0.
+- **Watch for a NULL group.** Some versions of the test data include rows with no `query_name`; `GROUP BY` makes them their own group, and `WHERE q.query_name IS NOT NULL` removes it.

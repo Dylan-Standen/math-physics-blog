@@ -1,0 +1,60 @@
+---
+title: "Monthly Transactions I"
+description: "Grouping by a computed key, and why a filter belongs inside the aggregate rather than in WHERE."
+problem: 1193
+source: LeetCode
+difficulty: Medium
+date: "2026-11-26"
+categories: [aggregation, conditional aggregation, dates]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/monthly-transactions-i/)
+
+## Problem
+
+`Transactions` records each transaction's `country`, `state` (`'approved'` or `'declined'`), `amount` and `trans_date`. For each month and country, report the number of transactions, the number approved, the total amount, and the total approved amount.
+
+## Formalisation
+
+Let $T$ be the table and define the key $k(t) = (\mathrm{month}(t), \mathrm{country}(t))$, where the month is the date formatted as `YYYY-MM`. Grouping partitions $T$ into the classes
+
+$$
+G_{m,c} = \{\, t \in T \mid k(t) = (m, c) \,\}.
+$$
+
+Every output column is a sum over the **same** class, weighted differently:
+
+$$
+\begin{aligned}
+\texttt{trans\_count} &= \sum_{t \in G} 1, &
+\texttt{approved\_count} &= \sum_{t \in G} \mathbf{1}[t \text{ approved}], \\
+\texttt{trans\_total} &= \sum_{t \in G} t.\mathrm{amount}, &
+\texttt{approved\_total} &= \sum_{t \in G} t.\mathrm{amount}\cdot\mathbf{1}[t \text{ approved}].
+\end{aligned}
+$$
+
+The indicator $\mathbf{1}[\cdot]$ is a `CASE` expression inside the aggregate. A `WHERE` would instead replace $G$ by its approved subset for every column at once.
+
+## Solution
+
+```sql
+SELECT DATE_FORMAT(t.trans_date, '%Y-%m') AS month,
+       t.country,
+       COUNT(*) AS trans_count,
+       SUM(CASE WHEN t.state = 'approved' THEN 1 ELSE 0 END) AS approved_count,
+       SUM(t.amount) AS trans_total_amount,
+       SUM(CASE WHEN t.state = 'approved' THEN t.amount ELSE 0 END)
+         AS approved_total_amount
+FROM Transactions t
+GROUP BY month, t.country;
+```
+
+## Pitfalls
+
+- **`EXTRACT` takes one unit.** `EXTRACT(YEAR, MONTH FROM d)` is invalid. `EXTRACT(YEAR_MONTH FROM d)` returns the number `202312`, not the text `2023-12`; use `DATE_FORMAT(d, '%Y-%m')`.
+- **"For each month" means `GROUP BY`, not a filter.** My first attempt put `WHERE t.trans_date IN month` inside the `SELECT` list. `WHERE` is its own clause after `FROM`, and `IN` needs a list or a subquery.
+- **Every non-aggregated column in `SELECT` must be in `GROUP BY`.** Grouping by country alone while selecting the month is rejected, or returns an arbitrary month.
+- **A `WHERE` filter applies to every column.** With `WHERE state = 'approved'`, the totals only see approved rows, and a month with no approvals disappears entirely. Put the condition inside the aggregates that need it.
+- **`COUNT(col)` counts non-NULL values, not matches.** `COUNT(t.state)` counts every transaction; it only looked right while the `WHERE` had removed the declined ones.
+- **Grouping by an alias is a MySQL convenience.** Standard SQL requires repeating the expression: `GROUP BY DATE_FORMAT(t.trans_date, '%Y-%m'), t.country`.
+- **MySQL shorthand:** `SUM(t.state = 'approved')` also counts approvals, because a comparison evaluates to 1 or 0.
