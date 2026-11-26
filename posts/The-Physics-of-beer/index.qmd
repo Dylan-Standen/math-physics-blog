@@ -20,6 +20,6 @@ Enough about the history of beer and onto maths. I should note that I will not b
 
 ## Foam Drainage Equation
 
-The dynamics of how Foam evolves, known as the foam drainage equation (or law) was first formalised in 1996 with the work by Verbist, Weaire & Kraynik. 
+The dynamics of how Foam evolves, known as the foam drainage equation (or law) was first formalised in 1996 with the work by Verbist, Weaire & Kraynik.... This is not finished. The final draft will be posted soon. 
 
 

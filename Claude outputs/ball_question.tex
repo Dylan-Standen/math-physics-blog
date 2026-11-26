@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage{tikz}
+\begin{document}
+
+\noindent A ball contains $5000\,\mathrm{cm}^3$ of air.
+
+\medskip
+\noindent More air is pumped into the ball at a rate of $160\,\mathrm{cm}^3$ per second.
+
+\medskip
+\noindent The ball is full of air when it becomes a sphere with radius $15\,\mathrm{cm}$.
+
+\begin{center}
+\begin{tikzpicture}[line join=round, scale=0.9]
+  \def\R{2}      % radius of the drawn ball
+  \def\al{48.6}  % tilt of the ball towards the viewer (degrees)
+  % eight panels, each bounded by two meridians and the outline
+  \foreach \k/\shade in {0/black!65, 1/black!8, 2/black!38, 3/white,
+                         4/black!65, 5/black!8, 6/black!38, 7/white} {
+    \pgfmathsetmacro\pa{45*\k + 10}
+    \pgfmathsetmacro\pb{45*(\k+1) + 10}
+    \pgfmathsetmacro\ta{atan2(cos(\al), sin(\al)*sin(\pa))}
+    \pgfmathsetmacro\tb{atan2(cos(\al), sin(\al)*sin(\pb))}
+    \pgfmathsetmacro\ba{atan2(sin(\ta)*sin(\pa)*cos(\al) + cos(\ta)*sin(\al), sin(\ta)*cos(\pa))}
+    \pgfmathsetmacro\bb{atan2(sin(\tb)*sin(\pb)*cos(\al) + cos(\tb)*sin(\al), sin(\tb)*cos(\pb))}
+    \pgfmathsetmacro\bb{ifthenelse(\bb < \ba, \bb + 360, \bb)}
+    \filldraw[fill=\shade, draw=black, thick]
+      plot[domain=0:\ta, samples=40, smooth, variable=\t]
+        ({\R*sin(\t)*cos(\pa)}, {\R*(sin(\t)*sin(\pa)*cos(\al) + cos(\t)*sin(\al))})
+      arc[start angle=\ba, end angle=\bb, radius=\R]
+      -- plot[domain=\tb:0, samples=40, smooth, variable=\t]
+        ({\R*sin(\t)*cos(\pb)}, {\R*(sin(\t)*sin(\pb)*cos(\al) + cos(\t)*sin(\al))})
+      -- cycle;
+  }
+  % outline and valve
+  \draw[very thick] (0,0) circle (\R);
+  \filldraw[fill=white, thick] (0, {\R*sin(\al)}) ellipse ({0.34} and {0.34*cos(\al)});
+  \draw[thick] (0, {\R*sin(\al)}) ellipse ({0.22} and {0.22*cos(\al)});
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\fbox{\begin{minipage}{0.75\textwidth}
+\centering\vspace{6pt}
+Volume of a sphere $= \displaystyle\frac{4}{3}\pi r^3$ \qquad where $r$ is the radius
+\vspace{6pt}
+\end{minipage}}
+\end{center}
+
+\medskip
+\noindent Does it take \textbf{less than} 1 minute to fill the ball?
+
+\noindent You must show your working.
+
+\end{document}

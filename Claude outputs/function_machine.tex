@@ -1,0 +1,35 @@
+\documentclass[border=4pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, positioning, arrows.meta}
+\usepackage{sansmath}
+
+% ------------------------------------------------------------------
+% \functionmachine{<input>}{<op 1>, <op 2>, ...}{<output>}
+%   - any number of operations, comma-separated, written in maths mode
+%   - leave the input or output empty for the pupil to fill in
+% ------------------------------------------------------------------
+\newcommand{\functionmachine}[3]{%
+\begin{tikzpicture}[
+    font=\sffamily\sansmath\Large,
+    node distance=1.2cm,
+    io/.style={ellipse, draw, thick, minimum width=3.2cm, minimum height=1.9cm},
+    op/.style={rectangle, draw, thick, minimum width=2.4cm, minimum height=1.9cm},
+    flow/.style={thick, -{To[length=2.5mm, width=3mm]}},
+    lbl/.style={font=\sffamily\large}
+  ]
+  \node[io] (n0) {#1};
+  \node[lbl, above=3mm of n0] {Input};
+  \foreach \op [count=\i, remember=\i as \j (initially 0)] in {#2} {
+    \node[op, right=of n\j] (n\i) {$\op$};
+    \draw[flow] (n\j) -- (n\i);
+    \xdef\fmlast{\i}
+  }
+  \node[io, right=of n\fmlast] (out) {#3};
+  \draw[flow] (n\fmlast) -- (out);
+  \node[lbl, above=3mm of out] {Output};
+\end{tikzpicture}%
+}
+
+\begin{document}
+\functionmachine{58}{+\,26, \div\,21}{}
+\end{document}
