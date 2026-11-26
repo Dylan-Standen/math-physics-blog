@@ -1,0 +1,61 @@
+---
+title: "Biggest Single Number"
+description: "The table as a multiset: its multiplicity function, a preimage, and why MAX of an empty set gives NULL."
+problem: 619
+source: LeetCode
+difficulty: Easy
+date: "2026-11-26"
+categories: [aggregation, CTE, "NULL"]
+---
+
+[Problem on LeetCode](https://leetcode.com/problems/biggest-single-number/)
+
+## Problem
+
+`MyNumbers` is a single column of integers, possibly with repeats. A single number is one that appears exactly once. Report the largest single number, or `null` if there is none.
+
+## Formalisation
+
+The table is a multiset $T$, which is exactly a set together with a multiplicity function
+
+$$
+\mu(n) = \big|\{\, t \in T \mid t = n \,\}\big|.
+$$
+
+`GROUP BY num` with `COUNT(*)` computes $\mu$: one row per distinct value $n$, carrying $\mu(n)$. The single numbers are the preimage
+
+$$
+S = \mu^{-1}(\{1\}) = \{\, n \mid \mu(n) = 1 \,\},
+$$
+
+and the answer is $\max S$, with the convention $\max \emptyset = \mathrm{NULL}$. SQL follows this convention: an aggregate over an empty set returns one row containing NULL.
+
+## Solution
+
+```sql
+WITH dist AS (
+  SELECT num, COUNT(*) AS cnt
+  FROM MyNumbers
+  GROUP BY num
+)
+SELECT MAX(num) AS num
+FROM dist
+WHERE cnt = 1;
+```
+
+The same query with a subquery and `HAVING`, which filters the groups directly:
+
+```sql
+SELECT MAX(num) AS num
+FROM (SELECT num
+      FROM MyNumbers
+      GROUP BY num
+      HAVING COUNT(*) = 1) AS singles;
+```
+
+## Pitfalls
+
+- **A CTE body is a full query.** My first attempt wrote `WITH dist AS (num, COUNT(*) AS cnt FROM ...)` without the `SELECT`.
+- **`ON d.num = d.num` compares a table with itself.** It is true for every row, so the join pairs every row with every row, a Cartesian product. The condition should link the two tables (`i.num = d.num`), and here no join is needed at all, since `dist` already has one row per number.
+- **`MAX` handles the empty case; `LIMIT` does not.** `ORDER BY num DESC LIMIT 1` returns no rows when there are no single numbers, but the problem wants one row containing `null`. `MAX` over an empty set gives exactly that.
+- **`WHERE` filters rows, `HAVING` filters groups.** In the CTE version, `cnt` is an ordinary column of `dist`, so `WHERE cnt = 1` works. Inside the grouped query itself, the condition on `COUNT(*)` has to go in `HAVING`.
