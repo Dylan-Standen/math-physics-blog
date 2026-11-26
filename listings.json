@@ -1,9 +1,17 @@
 [
   {
+    "listing": "/index.html",
+    "items": [
+      "/posts/The-Physics-of-beer/index.html",
+      "/posts/curvature-as-a-commutator/index.html"
+    ]
+  },
+  {
     "listing": "/sql.html",
     "items": [
       "/sql/0197-rising-temperature.html",
       "/sql/0610-triangle-judgement.html",
+      "/sql/0619-biggest-single-number.html",
       "/sql/0620-not-boring-movies.html",
       "/sql/1068-product-sales-analysis-i.html",
       "/sql/1075-project-employees-i.html",
@@ -16,13 +24,6 @@
       "/sql/1731-the-number-of-employees-which-report-to-each-employee.html",
       "/sql/1757-recyclable-and-low-fat-products.html",
       "/sql/1934-confirmation-rate.html"
-    ]
-  },
-  {
-    "listing": "/index.html",
-    "items": [
-      "/posts/The-Physics-of-beer/index.html",
-      "/posts/curvature-as-a-commutator/index.html"
     ]
   }
 ]
