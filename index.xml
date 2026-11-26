@@ -21,7 +21,7 @@
 
 
 
-<p>Who doesn’t love a good (ice-cold) beer? I certainly do, and if you have ever wondered if there is a mathematical way to describe the foam from pouring a beer, then you have come to right place. In this post I am going to explore and explain the Physics that make this effect occur and how we can describe it mathematically. Towards the end I will discuss the surprisingly deep overlap with integrable systems - systems which are exactly solvable, by which we mean we can integrate them to attain a solution.</p>
+<p>Who doesn’t love a good (ice-cold) beer? I certainly do, and if you have ever wondered if there is a mathematical way to describe the foam from pouring a beer, then you have come to right place. In this post I am going to explore the physics and mathematics of how we can describe beer foam (and foams more generally). Towards the end I will discuss the surprisingly deep overlap with integrable systems - systems which are exactly solvable, by which we mean we can integrate them to attain a solution.</p>
 <section id="the-advent-of-beer" class="level2">
 <h2 class="anchored" data-anchor-id="the-advent-of-beer">The Advent of Beer</h2>
 <p>Beer is one of the oldest alcoholic beverages. It’s root stretch back to at least 13,000, with the Natufians consuming a beer-like beverage during ritual ceremonies. Obviously since then, peoples across the world have been fermenting grain and hops in order to create the beautiful golden drink we know today.</p>
@@ -29,7 +29,7 @@
 </section>
 <section id="foam-drainage-equation" class="level2">
 <h2 class="anchored" data-anchor-id="foam-drainage-equation">Foam Drainage Equation</h2>
-<p>The dynamics of how Foam evolves, known as the foam drainage equation (or law) was first formalised in 1996 with the work by Verbist, Weaire &amp; Kraynik…. This is not finished. The final draft will be posted soon.</p>
+<p>The dynamics of how Foam evolves, known as the foam drainage equation (or law) was first formalised in 1996 with the work by Verbist, Weaire &amp; Kraynik. The experimental and mathematical description of Foam (is somewhat surprisingly) an active area of research. Upon reflection, this isn’t surprising since foam has an absolutely absurd number of use cases. Understanding it deeply will unlock a vast amount of new applications…This is not finished. The final draft will be posted soon.</p>
 
 
 </section>
